@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Where the Price Comes From, and What a Battery Is Worth, Chiharu Mamiya</title>
+<meta name="description" content="Economic dispatch by lambda iteration on IEEE 118-bus cost data, LP duality verified numerically, and battery arbitrage showing revenue is exactly zero below a 1.181 price ratio."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F7F4EF;--cream2:#EDE9E1;--cream3:#E3DDD3;
+  --ink:#1A1714;--ink2:#5C5650;--ink3:#9B948C;
+  --sage:#4A7C6F;--sage-lt:#D4E8E2;
+  --terra:#C4714A;--terra-lt:#F2DDD4;
+  --sand:#B89E7E;--sand-lt:#EDE4D6;
+  --sky:#4B7FA8;--sky-lt:#D5E6F2;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --r:16px;--r-sm:10px;--r-lg:24px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--sage);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--cream3);padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:62px}
+.nav-name{font-family:var(--serif);font-size:17px;color:var(--ink)}
+.nav-back{display:flex;align-items:center;gap:.5rem;font-size:13.5px;color:var(--ink2);font-weight:500;transition:color .15s}
+.nav-back:hover{color:var(--ink);text-decoration:none}
+
+.hero{max-width:800px;margin:0 auto;padding:4rem 2.5rem 2.5rem}
+.hero-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
+.hero h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em}
+.hero-desc{font-size:15.5px;color:var(--ink2);line-height:1.78;margin-bottom:1.5rem;max-width:640px}
+.tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.tag{font-size:12px;font-weight:500;padding:5px 13px;border-radius:100px;border:1px solid var(--cream3);color:var(--ink2);background:var(--cream)}
+.tag.sage{background:var(--sage-lt);border-color:transparent;color:var(--sage)}
+.tag.terra{background:var(--terra-lt);border-color:transparent;color:var(--terra)}
+.tag.sky{background:var(--sky-lt);border-color:transparent;color:var(--sky)}
+
+.result-banner{background:var(--terra-lt);border-left:3px solid var(--terra);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin-bottom:2rem}
+.result-banner-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.result-banner-stats{display:flex;flex-wrap:wrap;gap:2rem}
+.rstat-num{font-family:var(--serif);font-size:1.8rem;color:var(--ink);line-height:1}
+.rstat-label{font-size:12px;color:var(--ink2);line-height:1.35;margin-top:.2rem}
+
+.content{max-width:800px;margin:0 auto;padding:0 2.5rem 5rem}
+.section-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.6rem;margin-top:3rem}
+.content h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;color:var(--ink);margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--cream3)}
+.content h3{font-size:15px;font-weight:500;color:var(--ink);margin:1.25rem 0 .5rem}
+.content p{color:var(--ink2);margin-bottom:1rem;font-size:15px;line-height:1.78}
+.content p strong{color:var(--ink)}
+.content ul{list-style:none;margin-bottom:1.25rem}
+.content ul li{color:var(--ink2);font-size:15px;line-height:1.7;padding:.3rem 0 .3rem 1.1rem;position:relative;border-bottom:0.5px solid var(--cream3)}
+.content ul li:last-child{border-bottom:none}
+.content ul li::before{content:'\00b7';position:absolute;left:0;color:var(--terra);font-size:1.2rem;top:-.05rem}
+.content ul li strong{color:var(--ink)}
+code{background:var(--cream2);padding:2px 6px;border-radius:4px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.card{background:white;border:1px solid var(--cream3);border-radius:var(--r);padding:1.5rem;margin:1.25rem 0}
+.card-title{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:1rem}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}
+.stat{background:var(--cream);border-radius:var(--r-sm);padding:.85rem 1rem}
+.stat-num{font-family:var(--serif);font-size:1.6rem;color:var(--ink);line-height:1;margin-bottom:.2rem}
+.stat-label{font-size:12px;color:var(--ink3);line-height:1.3}
+
+.chart-img{width:100%;border-radius:var(--r);border:1px solid var(--cream3);display:block;background:white;cursor:zoom-in;transition:border-color .15s}
+a:hover>.chart-img{border-color:var(--ink3)}
+/* the results figures are ~2560px wide, so let them break out of the 720px text column */
+.fig-wide{margin:1.5rem 0}
+@media(min-width:1180px){.fig-wide{width:1080px;margin-left:-180px}}
+.chart-cap{font-size:12.5px;color:var(--ink3);margin:-.6rem 0 1.5rem;line-height:1.5}
+
+.ieee-card{background:white;border:1px solid var(--cream3);border-radius:var(--r-lg);padding:1.75rem;margin:1.25rem 0}
+.ieee-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin:1rem 0}
+.ieee-stat{background:var(--sage-lt);border-radius:var(--r-sm);padding:.75rem 1rem;text-align:center}
+.ieee-stat-num{font-family:var(--serif);font-size:1.4rem;color:var(--sage);line-height:1}
+.ieee-stat-label{font-size:11.5px;color:var(--ink2);margin-top:.2rem}
+
+.bar-section{background:var(--cream);border-radius:var(--r);padding:1.25rem;margin:1rem 0}
+.bar-label-row{font-size:11px;color:var(--ink3);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.bar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;font-size:12px}
+.bar-name{width:96px;text-align:right;color:var(--ink2);flex-shrink:0}
+.bar-track{flex:1;height:7px;background:var(--cream2);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px}
+.bar-fill.red{background:var(--terra)}
+.bar-fill.green{background:var(--sage)}
+.bar-fill.blue{background:var(--sky)}
+.bar-fill.sand{background:var(--sand)}
+.bar-val{width:66px;color:var(--ink);font-weight:500;font-size:11.5px}
+
+.severity-table{width:100%;border-collapse:collapse;font-size:13px;margin:1rem 0}
+.severity-table th{background:var(--cream2);color:var(--ink2);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--cream3)}
+.severity-table td{padding:.6rem 1rem;border-bottom:1px solid var(--cream3);color:var(--ink2)}
+.severity-table tr:last-child td{border-bottom:none}
+.severity-table tr:hover td{background:var(--cream)}
+.severity-table td.hl{color:var(--terra);font-weight:500}
+.table-wrap{overflow-x:auto;margin:1rem 0}
+.badge-yes{background:var(--terra-lt);color:var(--terra);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.badge-no{background:var(--cream2);color:var(--ink3);padding:2px 8px;border-radius:100px;font-size:11px}
+.badge-ok{background:var(--sage-lt);color:var(--sage);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+
+.ref-list{list-style:none;margin:0;counter-reset:refs}
+.ref-list li{counter-increment:refs;display:flex;gap:.75rem;padding:.5rem 0;border-bottom:0.5px solid var(--cream3);font-size:13px;color:var(--ink2);line-height:1.55}
+.ref-list li:last-child{border-bottom:none}
+.ref-list li::before{content:counter(refs);font-family:var(--serif);font-size:1rem;color:var(--terra);flex-shrink:0;width:20px;padding-top:.05rem}
+.ref-list li a{color:var(--sage)}
+
+.info-box{background:var(--sky-lt);border-left:3px solid var(--sky);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.info-box strong{color:var(--ink)}
+.warn-box{background:var(--sand-lt);border-left:3px solid var(--sand);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.warn-box strong{color:var(--ink)}
+.finding{background:white;border:1px solid var(--terra);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0}
+.finding-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.finding p{margin-bottom:0;color:var(--ink2)}
+.finding p+p{margin-top:.75rem}
+
+.github-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--cream);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:background .15s}
+.github-btn:hover{background:var(--ink2);text-decoration:none;color:var(--cream)}
+.outline-btn{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--ink);border:1.5px solid var(--cream3);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:all .15s}
+.outline-btn:hover{border-color:var(--ink3);text-decoration:none}
+
+
+/* long DOIs, URLs and code lines must not push the page sideways on mobile */
+code{overflow-wrap:anywhere;word-break:break-word}
+.ref-list li{overflow-wrap:anywhere}
+.content a{overflow-wrap:anywhere}
+footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:center;font-size:12.5px;color:var(--ink3)}
+
+@media(max-width:640px){
+  nav{padding:0 1.25rem}
+  .hero{padding:2.5rem 1.25rem 2rem}
+  .content{padding:0 1.25rem 4rem}
+  .result-banner-stats{gap:1.25rem}
+  .bar-name{width:74px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://chiharuma38.github.io/" class="nav-name">Chiharu Mamiya</a>
+  <a href="https://chiharuma38.github.io/#projects" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to projects
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Electricity Markets &#183; Optimisation &#183; Storage Economics</div>
+  <h1>Where the Price Comes From,<br/>and What a Battery Is Worth</h1>
+  <p class="hero-desc">Electricity prices are the dual variables of a constrained optimisation. This project demonstrates that from published cost data rather than taking it on trust: economic dispatch by lambda iteration on the IEEE 118-bus cost curves, a numerical verification of the duality result, and then battery arbitrage against the resulting prices as a linear program.</p>
+  <div class="tags"><span class="tag sage">SciPy linprog</span><span class="tag sage">Python</span><span class="tag sky">IEEE 118-bus costs</span><span class="tag terra">LP duality</span><span class="tag terra">Storage economics</span><span class="tag ">Marginal pricing</span></div>
+
+  <div class="result-banner">
+    <div class="result-banner-label">Key results</div>
+    <div class="result-banner-stats"><div><div class="rstat-num">40.196</div><div class="rstat-label">EUR/MWh &#8212; duality verified<br/>to 4 decimal places</div></div><div><div class="rstat-num">1.181</div><div class="rstat-label">Price ratio below which<br/>revenue is exactly zero</div></div><div><div class="rstat-num">265 &#8594; 104</div><div class="rstat-label">EUR per MWh installed,<br/>1 h against 8 h battery</div></div><div><div class="rstat-num">6.7%</div><div class="rstat-label">Perfect-foresight premium<br/>over naive persistence</div></div></div>
+  </div>
+
+  <a href="https://github.com/chiharuma38/power-systems-portfolio/tree/main/04_storage_optimizer" class="github-btn" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+    View code on GitHub
+  </a>
+</div>
+
+<div class="content">
+
+  <div class="section-eyebrow">Background</div>
+  <h2>Starting one level lower than usual</h2>
+  <p>Most battery studies begin by downloading a price series. That is a reasonable place to start if you want a business case, but it takes the most interesting object in the problem &#8212; the price itself &#8212; entirely on trust.</p>
+  <p>Electricity prices are not an input to a power system. They are the <strong>dual variables of a constrained optimisation</strong>: the marginal cost of serving one more MW of demand, which falls out of the dispatch problem rather than being assigned to it. That is the theoretical content of nodal pricing, stated in Schweppe&#8217;s <em>Spot Pricing of Electricity</em> and in Kirschen and Strbac.</p>
+  <p>This project demonstrates that from published cost data rather than asserting it, and then uses the resulting prices to work out what a battery is actually worth.</p>
+
+  <div class="info-box">
+    <strong>The five steps:</strong> solve economic dispatch on the IEEE 118-bus quadratic cost curves by lambda iteration &#8594; verify numerically that the multiplier equals the derivative of system cost with respect to demand &#8594; build an hourly price series by pushing a demand profile through that dispatch &#8594; optimise battery arbitrage against those prices as a linear program &#8594; report sensitivities, because the demand profile is an assumption.
+  </div>
+
+  <div class="section-eyebrow">Results, part one</div>
+  <h2>The duality result, verified</h2>
+  <p>Lambda iteration finds the system marginal price by adjusting a single scalar until total dispatched generation matches demand. At the optimum, every dispatched unit should be operating where its own marginal cost equals that scalar. And the scalar itself should equal the derivative of total system cost with respect to demand &#8212; which can be checked numerically by nudging demand and re-solving.</p>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Check</th><th>Value</th></tr></thead><tbody><tr><td>Price at nominal demand (4,242 MW)</td><td class="hl">40.196 EUR/MWh</td></tr><tr><td>Numerical dCost / dDemand</td><td class="hl">40.1961 EUR/MWh</td></tr><tr><td>Max |marginal cost &#8722; &#955;| over dispatched units</td><td>0.0</td></tr><tr><td>Generators / total capacity</td><td>53 units, 9,161 MW</td></tr></tbody></table></div>
+
+  <p>The multiplier and the numerical derivative agree to four decimal places, and the maximum deviation between any dispatched unit&#8217;s marginal cost and lambda is <strong>exactly zero</strong>. That is the theory of marginal pricing demonstrated on real published cost data rather than taken on faith.</p>
+
+  <h3>The resulting price series</h3>
+  <p>Pushing a daily demand profile through the dispatch produces <strong>2,160 hours</strong> of prices: mean 37.51 EUR/MWh, range 30.36 to 41.00, standard deviation 3.07.</p>
+
+  <div class="section-eyebrow">Results, part two</div>
+  <h2>What is a battery worth?</h2>
+  <p>Battery arbitrage is a linear program: charge when cheap, discharge when expensive, subject to power rating, energy capacity, state-of-charge limits and round-trip efficiency. Solved with SciPy&#8217;s <code>linprog</code> against the price series above, for a 50 MW battery over 90 days.</p>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Duration</th><th>Energy</th><th>Revenue, 90 days</th><th>Per MWh installed</th><th>Cycles</th></tr></thead><tbody><tr><td>1 h</td><td>50 MWh</td><td>13,265 EUR</td><td class="hl">265.3 EUR</td><td>83.2</td></tr><tr><td>2 h</td><td>100 MWh</td><td>24,278 EUR</td><td>242.8 EUR</td><td>82.8</td></tr><tr><td>4 h</td><td>200 MWh</td><td>38,404 EUR</td><td>192.0 EUR</td><td>81.3</td></tr><tr><td>8 h</td><td>400 MWh</td><td>41,410 EUR</td><td>103.5 EUR</td><td>47.2</td></tr></tbody></table></div>
+  <div class="bar-section"><div class="bar-label-row">Revenue per MWh of installed energy &#183; 50 MW battery, 90 days, EUR</div><div class="bar-row"><div class="bar-name">1 hour</div><div class="bar-track"><div class="bar-fill green" style="width:100%"></div></div><div class="bar-val">265.3</div></div><div class="bar-row"><div class="bar-name">2 hours</div><div class="bar-track"><div class="bar-fill green" style="width:92%"></div></div><div class="bar-val">242.8</div></div><div class="bar-row"><div class="bar-name">4 hours</div><div class="bar-track"><div class="bar-fill sand" style="width:72%"></div></div><div class="bar-val">192.0</div></div><div class="bar-row"><div class="bar-name">8 hours</div><div class="bar-track"><div class="bar-fill red" style="width:39%"></div></div><div class="bar-val">103.5</div></div></div>
+
+  <div class="finding">
+    <div class="finding-label">Finding one</div>
+    <p><strong>Revenue per MWh of installed energy falls as duration rises.</strong> A one-hour battery earns 265 EUR per MWh installed; an eight-hour battery earns 104 &#8212; less than half.</p>
+    <p>The reason is that a short battery captures the single best spread each day and cycles fully, while a longer battery has to reach into shallower parts of the price curve to fill itself. Cycle count tells the same story: 83 cycles at one hour, 47 at eight hours. That points the opposite way from the intuition that bigger is better, and it is the kind of result a developer would act on when sizing an asset.</p>
+  </div>
+
+  <h3>Does forecasting matter?</h3>
+  <p>The LP above assumes perfect foresight of tomorrow&#8217;s prices, which no operator has. Re-running it with naive persistence &#8212; bid today assuming today&#8217;s prices repeat yesterday&#8217;s &#8212; gives the size of that advantage.</p>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Case</th><th>Revenue over 89 days</th></tr></thead><tbody><tr><td>Perfect foresight</td><td>24,121 EUR</td></tr><tr><td>Naive persistence, yesterday&#8217;s prices</td><td>22,508 EUR</td></tr><tr><td><strong>Foresight premium</strong></td><td class="hl">6.7%</td></tr></tbody></table></div>
+
+  <p>A 6.7 percent foresight premium is smaller than I expected, and I want to be clear that <strong>this is a property of my assumed profile rather than a fact about batteries</strong>. My daily demand shape repeats closely, so yesterday is an excellent forecast of today. In a real market with weather-driven renewables the day-to-day shape varies far more, and the premium would be substantially larger. The result is reported because it is honest, not because it generalises.</p>
+
+  <div class="section-eyebrow">The main finding</div>
+  <h2>The volatility cliff</h2>
+  <p>The demand profile is the weakest input in the whole model, so the last experiment scales its amplitude and watches what happens to revenue. A four-hour battery, 30 days.</p>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Profile amplitude</th><th>Price std dev</th><th>Spread</th><th>Revenue, 30 days</th></tr></thead><tbody><tr><td>0.50</td><td>1.01</td><td>5.16</td><td class="hl">0</td></tr><tr><td>0.75</td><td>1.22</td><td>5.73</td><td class="hl">0</td></tr><tr><td>1.00</td><td>1.46</td><td>6.30</td><td>4 EUR</td></tr><tr><td>1.50</td><td>1.96</td><td>7.45</td><td>322 EUR</td></tr><tr><td>2.00</td><td>2.47</td><td>8.78</td><td>3,596 EUR</td></tr></tbody></table></div>
+  <div class="bar-section"><div class="bar-label-row">Revenue against demand profile amplitude &#183; 4 h battery, 30 days, EUR</div><div class="bar-row"><div class="bar-name">0.50</div><div class="bar-track"><div class="bar-fill red" style="width:1%"></div></div><div class="bar-val">0</div></div><div class="bar-row"><div class="bar-name">0.75</div><div class="bar-track"><div class="bar-fill red" style="width:1%"></div></div><div class="bar-val">0</div></div><div class="bar-row"><div class="bar-name">1.00</div><div class="bar-track"><div class="bar-fill sand" style="width:1%"></div></div><div class="bar-val">4</div></div><div class="bar-row"><div class="bar-name">1.50</div><div class="bar-track"><div class="bar-fill green" style="width:9%"></div></div><div class="bar-val">322</div></div><div class="bar-row"><div class="bar-name">2.00</div><div class="bar-track"><div class="bar-fill green" style="width:100%"></div></div><div class="bar-val">3,596</div></div></div>
+
+  <div class="finding">
+    <div class="finding-label">Finding two, the most useful in the project</div>
+    <p><strong>Below an amplitude of about 0.75, revenue is exactly zero. Not small &#8212; zero.</strong></p>
+    <p>With a round-trip efficiency of 0.846, the battery only earns anything if the ratio between its selling price and its buying price exceeds <strong>1.181</strong>. Below that threshold, every possible trade loses more to conversion losses than it gains on the spread, and the optimiser correctly refuses to trade at all.</p>
+    <p>So a battery business case is not proportional to average price, and it is not even proportional to price standard deviation. It depends on whether the achievable spread clears a hard efficiency barrier &#8212; and under that barrier the asset earns nothing from arbitrage regardless of how large it is. The observed price ratio in this study is 1.351, comfortably above the 1.181 break-even, which is why revenue exists at all.</p>
+  </div>
+
+  <p>This is the finding with the clearest commercial reading. An investment memo that models battery revenue as a linear function of price volatility will overstate it badly in a low-spread market, because the true function is zero up to a threshold and then rises steeply. The shape matters more than the slope.</p>
+
+  <div class="fig-wide"><a href="../images/p04_results.png" target="_blank" rel="noopener" title="Open the full-resolution figure in a new tab"><img class="chart-img" src="../images/p04_results.png" alt="Figure showing the merit-order price response, the generated hourly price series, revenue per MWh installed against battery duration, and the revenue cliff against demand profile amplitude." loading="lazy"/></a></div><div class="chart-cap">Generated by <code>src/dispatch_and_battery.py</code>. Click the figure to open it full size. Every number on this page is reproducible from a clean clone.</div>
+
+  <div class="section-eyebrow">Honesty</div>
+  <h2>Limitations</h2>
+  <div class="warn-box">
+    <strong>The daily demand profile is assumed, not measured.</strong> It is the weakest input in the model, and every conclusion that leans on it is reported as a sensitivity rather than a point estimate. That is why the volatility scan exists.
+  </div>
+  <ul>
+    <li><strong>The IEEE 118-bus system is heavily over-capacitated</strong> &#8212; 9,161 MW of generation against 4,242 MW of demand &#8212; so prices move far less than in a real tight market and no scarcity pricing is possible. Real markets spend part of the year on the steep end of the merit order, which this one never reaches.</li>
+    <li><strong>Single bus,</strong> so no network constraints and no locational price differences. Congestion is a large part of why real nodal prices differ, and none of it appears here.</li>
+    <li><strong>Day-ahead arbitrage only.</strong> No balancing, frequency response or capacity revenue. In the Nordic system, reserve revenue often exceeds arbitrage revenue &#8212; so this understates what a real battery earns, possibly by a lot.</li>
+    <li><strong>No degradation cost,</strong> so the model cycles more freely than an operator would. Adding a per-cycle cost would push optimal duration up, not down.</li>
+    <li><strong>Price-taker assumption,</strong> reasonable for 50 MW in a 4 GW system but not for a large fleet.</li>
+  </ul>
+
+  <div class="section-eyebrow">Output</div>
+  <h2>Files generated</h2>
+  <div class="card">
+    <div class="card-title">Results folder</div>
+    <ul>
+      <li><strong>p04_summary.json</strong>, headline numbers including the duality check and the break-even price ratio</li>
+      <li><strong>p04_price_vs_demand.csv</strong>, the merit-order response &#8212; price against demand across the dispatch range</li>
+      <li><strong>p04_prices.csv</strong>, the 2,160-hour generated price series</li>
+      <li><strong>p04_duration.csv</strong>, the duration scan with revenue, revenue per MWh installed and cycle count</li>
+      <li><strong>p04_volatility.csv</strong>, the volatility sensitivity behind the cliff</li>
+      <li><strong>p04_results.png</strong>, the figure above</li>
+    </ul>
+  </div>
+
+  <div class="section-eyebrow">Tools and libraries</div>
+  <h2>Software used</h2>
+  <ul>
+    <li><strong>SciPy</strong> <code>linprog</code> (HiGHS), the battery arbitrage linear program.</li>
+    <li><strong>numpy 1.26.4</strong>, lambda iteration and the numerical derivative check.</li>
+    <li><strong>pandapower 2.14.1</strong>, source of the IEEE 118-bus generator cost curves.</li>
+    <li><strong>pandas 2.1.4</strong>, results tables and CSV export.</li>
+    <li><strong>matplotlib</strong>, the results figure.</li>
+    <li><strong>Python 3.11</strong>, no commercial licences and no downloads.</li>
+  </ul>
+
+  <div class="section-eyebrow">References</div>
+  <h2>References</h2>
+  <ol class="ref-list"><li>Kirschen, D. S., and Strbac, G. (2019). <em>Fundamentals of Power System Economics</em>, 2nd ed. Wiley. ISBN 9781119213246.</li><li>Bohn, R. E., Caramanis, M. C., and Schweppe, F. C. (1984). &#8220;Optimal Pricing in Electrical Networks over Space and Time.&#8221; <em>The RAND Journal of Economics</em>, 15(3), 360 to 376. <a href="https://doi.org/10.2307/2555444" target="_blank" rel="noopener">doi.org/10.2307/2555444</a></li><li>Schweppe, F. C., Caramanis, M. C., Tabors, R. D., and Bohn, R. E. (1988). <em>Spot Pricing of Electricity.</em> Kluwer Academic Publishers. ISBN 0-89838-260-2.</li><li>Christie, R. (1993). &#8220;118 Bus Power Flow Test Case.&#8221; Power Systems Test Case Archive, University of Washington. <a href="https://labs.ece.uw.edu/pstca/pf118/pg_tca118bus.htm" target="_blank" rel="noopener">labs.ece.uw.edu</a></li><li>Virtanen, P. et al. (2020). &#8220;SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python.&#8221; <em>Nature Methods</em>, 17, 261 to 272. <a href="https://doi.org/10.1038/s41592-019-0686-2" target="_blank" rel="noopener">doi.org/10.1038/s41592-019-0686-2</a></li><li>Thurner, L. et al. (2018). &#8220;pandapower.&#8221; <em>IEEE Transactions on Power Systems</em>, 33(6), 6510 to 6521. <a href="https://pandapower.org" target="_blank" rel="noopener">pandapower.org</a></li></ol>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--cream3)">
+    <a href="https://github.com/chiharuma38/power-systems-portfolio/tree/main/04_storage_optimizer" class="github-btn" target="_blank" rel="noopener">View code on GitHub</a>
+    <a href="https://chiharuma38.github.io/#projects" class="outline-btn">&#8592; Back to all projects</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>Chiharu Mamiya &#183; Power Systems Engineer &#183; KTH/KU Leuven SENSE MSc 2026 to 2028</p>
+</footer>
+
+</body>
+</html>

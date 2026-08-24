@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HVAC Export Cable for an Offshore Wind Farm, Chiharu Mamiya</title>
+<meta name="description" content="How much shunt reactive compensation a 110 kV AC export cable needs for a 200 MW offshore wind farm, and the 160 km length at which AC stops working."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F7F4EF;--cream2:#EDE9E1;--cream3:#E3DDD3;
+  --ink:#1A1714;--ink2:#5C5650;--ink3:#9B948C;
+  --sage:#4A7C6F;--sage-lt:#D4E8E2;
+  --terra:#C4714A;--terra-lt:#F2DDD4;
+  --sand:#B89E7E;--sand-lt:#EDE4D6;
+  --sky:#4B7FA8;--sky-lt:#D5E6F2;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --r:16px;--r-sm:10px;--r-lg:24px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--sage);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--cream3);padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:62px}
+.nav-name{font-family:var(--serif);font-size:17px;color:var(--ink)}
+.nav-back{display:flex;align-items:center;gap:.5rem;font-size:13.5px;color:var(--ink2);font-weight:500;transition:color .15s}
+.nav-back:hover{color:var(--ink);text-decoration:none}
+
+.hero{max-width:800px;margin:0 auto;padding:4rem 2.5rem 2.5rem}
+.hero-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
+.hero h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em}
+.hero-desc{font-size:15.5px;color:var(--ink2);line-height:1.78;margin-bottom:1.5rem;max-width:640px}
+.tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.tag{font-size:12px;font-weight:500;padding:5px 13px;border-radius:100px;border:1px solid var(--cream3);color:var(--ink2);background:var(--cream)}
+.tag.sage{background:var(--sage-lt);border-color:transparent;color:var(--sage)}
+.tag.terra{background:var(--terra-lt);border-color:transparent;color:var(--terra)}
+.tag.sky{background:var(--sky-lt);border-color:transparent;color:var(--sky)}
+
+.result-banner{background:var(--terra-lt);border-left:3px solid var(--terra);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin-bottom:2rem}
+.result-banner-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.result-banner-stats{display:flex;flex-wrap:wrap;gap:2rem}
+.rstat-num{font-family:var(--serif);font-size:1.8rem;color:var(--ink);line-height:1}
+.rstat-label{font-size:12px;color:var(--ink2);line-height:1.35;margin-top:.2rem}
+
+.content{max-width:800px;margin:0 auto;padding:0 2.5rem 5rem}
+.section-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.6rem;margin-top:3rem}
+.content h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;color:var(--ink);margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--cream3)}
+.content h3{font-size:15px;font-weight:500;color:var(--ink);margin:1.25rem 0 .5rem}
+.content p{color:var(--ink2);margin-bottom:1rem;font-size:15px;line-height:1.78}
+.content p strong{color:var(--ink)}
+.content ul{list-style:none;margin-bottom:1.25rem}
+.content ul li{color:var(--ink2);font-size:15px;line-height:1.7;padding:.3rem 0 .3rem 1.1rem;position:relative;border-bottom:0.5px solid var(--cream3)}
+.content ul li:last-child{border-bottom:none}
+.content ul li::before{content:'\00b7';position:absolute;left:0;color:var(--terra);font-size:1.2rem;top:-.05rem}
+.content ul li strong{color:var(--ink)}
+code{background:var(--cream2);padding:2px 6px;border-radius:4px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.card{background:white;border:1px solid var(--cream3);border-radius:var(--r);padding:1.5rem;margin:1.25rem 0}
+.card-title{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:1rem}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}
+.stat{background:var(--cream);border-radius:var(--r-sm);padding:.85rem 1rem}
+.stat-num{font-family:var(--serif);font-size:1.6rem;color:var(--ink);line-height:1;margin-bottom:.2rem}
+.stat-label{font-size:12px;color:var(--ink3);line-height:1.3}
+
+.chart-img{width:100%;border-radius:var(--r);border:1px solid var(--cream3);display:block;background:white;cursor:zoom-in;transition:border-color .15s}
+a:hover>.chart-img{border-color:var(--ink3)}
+/* the results figures are ~2560px wide, so let them break out of the 720px text column */
+.fig-wide{margin:1.5rem 0}
+@media(min-width:1180px){.fig-wide{width:1080px;margin-left:-180px}}
+.chart-cap{font-size:12.5px;color:var(--ink3);margin:-.6rem 0 1.5rem;line-height:1.5}
+
+.ieee-card{background:white;border:1px solid var(--cream3);border-radius:var(--r-lg);padding:1.75rem;margin:1.25rem 0}
+.ieee-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin:1rem 0}
+.ieee-stat{background:var(--sage-lt);border-radius:var(--r-sm);padding:.75rem 1rem;text-align:center}
+.ieee-stat-num{font-family:var(--serif);font-size:1.4rem;color:var(--sage);line-height:1}
+.ieee-stat-label{font-size:11.5px;color:var(--ink2);margin-top:.2rem}
+
+.bar-section{background:var(--cream);border-radius:var(--r);padding:1.25rem;margin:1rem 0}
+.bar-label-row{font-size:11px;color:var(--ink3);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.bar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;font-size:12px}
+.bar-name{width:96px;text-align:right;color:var(--ink2);flex-shrink:0}
+.bar-track{flex:1;height:7px;background:var(--cream2);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px}
+.bar-fill.red{background:var(--terra)}
+.bar-fill.green{background:var(--sage)}
+.bar-fill.blue{background:var(--sky)}
+.bar-fill.sand{background:var(--sand)}
+.bar-val{width:66px;color:var(--ink);font-weight:500;font-size:11.5px}
+
+.severity-table{width:100%;border-collapse:collapse;font-size:13px;margin:1rem 0}
+.severity-table th{background:var(--cream2);color:var(--ink2);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--cream3)}
+.severity-table td{padding:.6rem 1rem;border-bottom:1px solid var(--cream3);color:var(--ink2)}
+.severity-table tr:last-child td{border-bottom:none}
+.severity-table tr:hover td{background:var(--cream)}
+.severity-table td.hl{color:var(--terra);font-weight:500}
+.table-wrap{overflow-x:auto;margin:1rem 0}
+.badge-yes{background:var(--terra-lt);color:var(--terra);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.badge-no{background:var(--cream2);color:var(--ink3);padding:2px 8px;border-radius:100px;font-size:11px}
+.badge-ok{background:var(--sage-lt);color:var(--sage);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+
+.ref-list{list-style:none;margin:0;counter-reset:refs}
+.ref-list li{counter-increment:refs;display:flex;gap:.75rem;padding:.5rem 0;border-bottom:0.5px solid var(--cream3);font-size:13px;color:var(--ink2);line-height:1.55}
+.ref-list li:last-child{border-bottom:none}
+.ref-list li::before{content:counter(refs);font-family:var(--serif);font-size:1rem;color:var(--terra);flex-shrink:0;width:20px;padding-top:.05rem}
+.ref-list li a{color:var(--sage)}
+
+.info-box{background:var(--sky-lt);border-left:3px solid var(--sky);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.info-box strong{color:var(--ink)}
+.warn-box{background:var(--sand-lt);border-left:3px solid var(--sand);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.warn-box strong{color:var(--ink)}
+.finding{background:white;border:1px solid var(--terra);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0}
+.finding-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.finding p{margin-bottom:0;color:var(--ink2)}
+.finding p+p{margin-top:.75rem}
+
+.github-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--cream);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:background .15s}
+.github-btn:hover{background:var(--ink2);text-decoration:none;color:var(--cream)}
+.outline-btn{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--ink);border:1.5px solid var(--cream3);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:all .15s}
+.outline-btn:hover{border-color:var(--ink3);text-decoration:none}
+
+
+/* long DOIs, URLs and code lines must not push the page sideways on mobile */
+code{overflow-wrap:anywhere;word-break:break-word}
+.ref-list li{overflow-wrap:anywhere}
+.content a{overflow-wrap:anywhere}
+footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:center;font-size:12.5px;color:var(--ink3)}
+
+@media(max-width:640px){
+  nav{padding:0 1.25rem}
+  .hero{padding:2.5rem 1.25rem 2rem}
+  .content{padding:0 1.25rem 4rem}
+  .result-banner-stats{gap:1.25rem}
+  .bar-name{width:74px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://chiharuma38.github.io/" class="nav-name">Chiharu Mamiya</a>
+  <a href="https://chiharuma38.github.io/#projects" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to projects
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Offshore Wind &#183; Reactive Compensation &#183; Open Source</div>
+  <h1>HVAC Export Cable for an<br/>Offshore Wind Farm</h1>
+  <p class="hero-desc">How much shunt reactive compensation does a 110 kV AC export cable need to connect a 200 MW offshore wind farm, and at what distance does the AC option stop working? A two-bus pandapower model sweeps cable length from 10 to 200 km on published XLPE cable data, finding by bisection the minimum compensation that holds the voltage band.</p>
+  <div class="tags"><span class="tag sage">pandapower</span><span class="tag sage">Python</span><span class="tag sky">110 kV XLPE cable data</span><span class="tag sky">Reactive compensation</span><span class="tag terra">Offshore Wind</span><span class="tag ">HVAC vs HVDC</span></div>
+
+  <div class="result-banner">
+    <div class="result-banner-label">Key results</div>
+    <div class="result-banner-stats"><div><div class="rstat-num">160 km</div><div class="rstat-label">Longest feasible<br/>AC connection</div></div><div><div class="rstat-num">109.5</div><div class="rstat-label">Mvar charging power<br/>at 100 km</div></div><div><div class="rstat-num">80 km</div><div class="rstat-label">No compensation<br/>needed below this</div></div><div><div class="rstat-num">46%</div><div class="rstat-label">Compensation required<br/>at 100 km</div></div></div>
+  </div>
+
+  <a href="https://github.com/chiharuma38/power-systems-portfolio/tree/main/02_offshore_wind" class="github-btn" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+    View code on GitHub
+  </a>
+</div>
+
+<div class="content">
+
+  <div class="section-eyebrow">Background</div>
+  <h2>Why a long AC cable fights you</h2>
+  <p>An overhead line and a submarine cable are not the same component wearing different clothes. A cable is two conductors separated by a thin layer of insulation over its whole length, which makes it a very large distributed capacitor. Energise it and it draws charging current whether or not anybody is using the power at the far end.</p>
+  <p>That charging current has two consequences, and both get worse with length. It occupies conductor capacity that would otherwise carry useful power, and it pushes the voltage up at the lightly loaded end &#8212; the <strong>Ferranti effect</strong>. Shunt reactors absorb the excess reactive power and pull the voltage back down. The engineering question is how much reactor you need, and whether there is a length past which no amount of it is enough.</p>
+  <p>This project answers that for one specific design: a 200 MW offshore wind farm connected to shore at 110 kV.</p>
+
+  <div class="info-box">
+    <strong>Why this matters commercially:</strong> the HVAC-versus-HVDC decision is one of the largest single cost drivers in an offshore wind project. HVDC converter stations are expensive and are only justified once AC stops working. Knowing where that crossover sits, for a given voltage and rating, is what the study is for.
+  </div>
+
+  <div class="section-eyebrow">Network data</div>
+  <h2>The cable</h2>
+  <p>The model uses a pandapower standard line type rather than invented parameters, so the numbers trace back to a published source. The type is <code>N2XS(FL)2Y 1x300 RM/35 64/110 kV</code>, a single-core XLPE cable with a 300 mm&#178; conductor, whose parameters come from Heuck, Dettmann and Schulz (2013), p. 744.</p>
+
+  <div class="ieee-card">
+    <div class="card-title">Cable and farm parameters</div>
+    <div class="ieee-grid">
+      <div class="ieee-stat"><div class="ieee-stat-num">110 kV</div><div class="ieee-stat-label">System voltage</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">200 MW</div><div class="ieee-stat-label">Wind farm rating</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">112.0</div><div class="ieee-stat-label">MVA per circuit</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">2</div><div class="ieee-stat-label">Parallel circuits required</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">144.0</div><div class="ieee-stat-label">nF/km capacitance</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">0.588</div><div class="ieee-stat-label">kA thermal rating</div></div>
+    </div>
+  </div>
+
+  <p>Resistance is 0.06 &#937;/km and reactance 0.144 &#937;/km. One circuit cannot carry 200 MW, so the model uses two in parallel &#8212; which is also how a real farm of this size would be built, for redundancy as much as for capacity.</p>
+
+  <div class="section-eyebrow">Methodology</div>
+  <h2>What the code does</h2>
+
+  <h3>Step 1, a two-bus model</h3>
+  <p>An offshore bus carrying the 200 MW generator, an onshore slack bus, and two parallel cable circuits between them. Deliberately the smallest model that contains the physics in question: nothing here depends on network topology, so a larger network would add noise rather than realism.</p>
+
+  <h3>Step 2, sweep the length</h3>
+  <p>Cable length runs from 10 km to 200 km in 10 km steps. At each length the model solves AC power flow uncompensated and records the offshore voltage, the circuit loading, the losses and the charging power.</p>
+
+  <h3>Step 3, find the minimum compensation by bisection</h3>
+  <p>At each length the code searches for the smallest shunt compensation ratio &#8212; the fraction of the cable&#8217;s charging power that gets cancelled &#8212; which keeps the offshore voltage inside 0.94 to 1.06 per unit and both circuits below their thermal rating. Bisection is used rather than a linear scan because the feasibility boundary is monotonic in compensation, so halving the interval converges in a few iterations instead of dozens of power flows.</p>
+  <p>Compensation is split evenly between the offshore and onshore ends.</p>
+
+  <div class="section-eyebrow">Results</div>
+  <h2>How much compensation, and where AC stops</h2>
+
+  <p>Charging power scales linearly with length, as the physics demands: <strong>54.7 Mvar at 50 km, 109.5 Mvar at 100 km, 219.0 Mvar at 200 km</strong>. At 100 km the cable is generating reactive power equal to 55 percent of the entire farm&#8217;s active power rating, purely by being switched on.</p>
+
+  <div class="bar-section"><div class="bar-label-row">Minimum shunt compensation required, 110 kV export cable, 200 MW farm</div><div class="bar-row"><div class="bar-name">10 to 80 km</div><div class="bar-track"><div class="bar-fill green" style="width:2%"></div></div><div class="bar-val">0%</div></div><div class="bar-row"><div class="bar-name">90 km</div><div class="bar-track"><div class="bar-fill green" style="width:21%"></div></div><div class="bar-val">21.1%</div></div><div class="bar-row"><div class="bar-name">100 km</div><div class="bar-track"><div class="bar-fill sand" style="width:46%"></div></div><div class="bar-val">46.1%</div></div><div class="bar-row"><div class="bar-name">110 km</div><div class="bar-track"><div class="bar-fill sand" style="width:63%"></div></div><div class="bar-val">63.3%</div></div><div class="bar-row"><div class="bar-name">120 km</div><div class="bar-track"><div class="bar-fill sand" style="width:75%"></div></div><div class="bar-val">75.4%</div></div><div class="bar-row"><div class="bar-name">130 km</div><div class="bar-track"><div class="bar-fill red" style="width:84%"></div></div><div class="bar-val">84.4%</div></div><div class="bar-row"><div class="bar-name">140 km</div><div class="bar-track"><div class="bar-fill red" style="width:91%"></div></div><div class="bar-val">90.6%</div></div><div class="bar-row"><div class="bar-name">150 km</div><div class="bar-track"><div class="bar-fill red" style="width:95%"></div></div><div class="bar-val">95.3%</div></div><div class="bar-row"><div class="bar-name">160 km</div><div class="bar-track"><div class="bar-fill red" style="width:99%"></div></div><div class="bar-val">98.8%</div></div><div class="bar-row"><div class="bar-name">170 km +</div><div class="bar-track"><div class="bar-fill red" style="width:100%"></div></div><div class="bar-val">none</div></div></div>
+
+  <p>The requirement is not linear, and that is the interesting part. Out to <strong>80 km the connection needs no compensation at all</strong> &#8212; the circuits are lightly enough loaded to absorb the charging current and the voltage stays in band on its own. From 90 km the requirement appears and then climbs steeply, reaching 98.8 percent at 160 km.</p>
+
+  <div class="finding">
+    <div class="finding-label">Key finding</div>
+    <p><strong>160 km is the wall.</strong> Beyond it the offshore voltage leaves the band even with the charging power completely cancelled. Full compensation removes the shunt capacitance from the problem, and what remains is series impedance &#8212; the voltage drop and rise caused by current flowing through resistance and reactance, which no shunt reactor can fix.</p>
+    <p>That is the point where HVDC stops being an alternative to HVAC and becomes the only option.</p>
+  </div>
+
+  <h3>The second finding: compensation buys thermal capacity too</h3>
+  <p>Shunt reactors are usually discussed as a voltage control measure. They are also a loss and loading measure, because removing reactive current from the conductor leaves more room for real power.</p>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>At 100 km</th><th>Uncompensated</th><th>With 46% compensation</th></tr></thead><tbody><tr><td>Offshore voltage</td><td>1.0765 p.u.</td><td class="hl">1.0599 p.u.</td></tr><tr><td>Circuit loading</td><td>95.2%</td><td class="hl">90.2%</td></tr><tr><td>Losses</td><td>9.42 MW</td><td class="hl">9.07 MW</td></tr><tr><td>Inside voltage band</td><td><span class="badge-yes">No</span></td><td><span class="badge-ok">Yes</span></td></tr></tbody></table></div>
+
+  <p>Losses fall by 0.35 MW and circuit loading by five percentage points, from the same reactors installed for voltage reasons. Over a 25-year project life that loss reduction is not a rounding error.</p>
+
+  <div class="fig-wide"><a href="../images/p02_results.png" target="_blank" rel="noopener" title="Open the full-resolution figure in a new tab"><img class="chart-img" src="../images/p02_results.png" alt="Four-panel figure: charging power against cable length, offshore voltage against compensation ratio at 100 km, minimum compensation against length, and the feasibility boundary at 160 km." loading="lazy"/></a></div><div class="chart-cap">Generated by <code>src/cable_study.py</code>. Click the figure to open it full size. Every number on this page is reproducible from a clean clone.</div>
+
+  <div class="section-eyebrow">Honesty</div>
+  <h2>Limitations</h2>
+  <div class="warn-box">
+    <strong>The 160 km figure is specific to this design and should not be quoted as a general AC-versus-DC crossover distance.</strong> Published work often puts the practical HVAC limit far shorter. Zhu, Dui and Zhang (2015) state in their abstract that HVAC is preferred within 40 km of shore. This study reaches further because the two circuits are lightly loaded and therefore have spare capacity for charging current.
+  </div>
+  <ul>
+    <li><strong>Only 110 kV is studied.</strong> Real export systems often use 220 kV or higher, which roughly halves the current for the same power and extends the AC range substantially.</li>
+    <li><strong>The farm operates at unity power factor.</strong> Modern turbine converters can provide reactive support, which would change the compensation requirement.</li>
+    <li><strong>Compensation is split evenly between the two ends,</strong> which Zhu et al. (2015) show is not optimal.</li>
+    <li><strong>No mid-cable compensation platform,</strong> which is the standard industry method for extending AC reach and is exactly what Dakic et al. (2021) study.</li>
+    <li><strong>No cost modelling.</strong> The real technology choice is economic, not just electrical. This study finds where AC becomes impossible, not where it becomes uneconomic &#8212; and the second boundary always comes first.</li>
+  </ul>
+
+  <div class="section-eyebrow">Output</div>
+  <h2>Files generated</h2>
+  <div class="card">
+    <div class="card-title">Results folder</div>
+    <ul>
+      <li><strong>p02_summary.json</strong>, headline numbers: charging power at each reference length, the compensation requirement at 100 km, and the feasibility limit</li>
+      <li><strong>p02_length_sweep.csv</strong>, the uncompensated case at every length: voltage, loading, losses, reactive flow</li>
+      <li><strong>p02_compensation_sweep.csv</strong>, offshore voltage against compensation ratio at 100 km, the slice that shows the bisection target</li>
+      <li><strong>p02_min_compensation.csv</strong>, the minimum feasible compensation at each length, with a feasibility flag</li>
+      <li><strong>p02_results.png</strong>, the four-panel figure above</li>
+    </ul>
+  </div>
+
+  <div class="section-eyebrow">Tools and libraries</div>
+  <h2>Software used</h2>
+  <ul>
+    <li><strong>pandapower 2.14.1</strong>, AC power flow and the standard line type library that supplies the cable parameters.</li>
+    <li><strong>numpy 1.26.4</strong>, the bisection search and the sweep arithmetic.</li>
+    <li><strong>pandas 2.1.4</strong>, results tables and CSV export.</li>
+    <li><strong>matplotlib</strong>, the four-panel results figure.</li>
+    <li><strong>Python 3.11</strong>, no commercial licences and no downloads. All cable data ships with pandapower.</li>
+  </ul>
+
+  <div class="section-eyebrow">References</div>
+  <h2>References</h2>
+  <ol class="ref-list"><li>Heuck, K., Dettmann, K.-D., and Schulz, D. (2013). <em>Elektrische Energieversorgung</em>, 9th ed. Springer Vieweg. The source of the cable parameters used here. <a href="https://doi.org/10.1007/978-3-8348-2174-4" target="_blank" rel="noopener">doi.org/10.1007/978-3-8348-2174-4</a></li><li>Zhu, G., Dui, X., and Zhang, C. (2015). &#8220;Optimisation of reactive power compensation of HVAC cable in off-shore wind power plant.&#8221; <em>IET Renewable Power Generation</em>, 9(7), 857 to 863. <a href="https://doi.org/10.1049/iet-rpg.2014.0375" target="_blank" rel="noopener">doi.org/10.1049/iet-rpg.2014.0375</a></li><li>Dakic, J. et al. (2021). &#8220;HVAC Transmission System for Offshore Wind Power Plants Including Mid-Cable Reactive Power Compensation.&#8221; <em>IEEE Transactions on Power Delivery</em>, 36(5), 2814 to 2824. <a href="https://doi.org/10.1109/TPWRD.2020.3027356" target="_blank" rel="noopener">doi.org/10.1109/TPWRD.2020.3027356</a></li><li>Rahman, S. et al. (2021). &#8220;A Comparison Review on Transmission Mode for Onshore Integration of Offshore Wind Farms: HVDC or HVAC.&#8221; <em>Electronics</em>, 10(12), 1489. <a href="https://doi.org/10.3390/electronics10121489" target="_blank" rel="noopener">doi.org/10.3390/electronics10121489</a></li><li>CIGRE Working Group B1.40 (2015). <em>Offshore generation cable connections.</em> Technical Brochure 610.</li><li>Thurner, L. et al. (2018). &#8220;pandapower: An Open-Source Python Tool for Convenient Modeling, Analysis, and Optimization of Electric Power Systems.&#8221; <em>IEEE Transactions on Power Systems</em>, 33(6), 6510 to 6521. <a href="https://pandapower.org" target="_blank" rel="noopener">pandapower.org</a></li></ol>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--cream3)">
+    <a href="https://github.com/chiharuma38/power-systems-portfolio/tree/main/02_offshore_wind" class="github-btn" target="_blank" rel="noopener">View code on GitHub</a>
+    <a href="https://chiharuma38.github.io/#projects" class="outline-btn">&#8592; Back to all projects</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>Chiharu Mamiya &#183; Power Systems Engineer &#183; KTH/KU Leuven SENSE MSc 2026 to 2028</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Detecting Line Outages from Bus Measurements, Chiharu Mamiya</title>
+<meta name="description" content="A random forest and an SVM detect transmission line outages at 0.962 accuracy on clean data, and collapse to chance at 0.5 percent measurement noise. The negative result is the point."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F7F4EF;--cream2:#EDE9E1;--cream3:#E3DDD3;
+  --ink:#1A1714;--ink2:#5C5650;--ink3:#9B948C;
+  --sage:#4A7C6F;--sage-lt:#D4E8E2;
+  --terra:#C4714A;--terra-lt:#F2DDD4;
+  --sand:#B89E7E;--sand-lt:#EDE4D6;
+  --sky:#4B7FA8;--sky-lt:#D5E6F2;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --r:16px;--r-sm:10px;--r-lg:24px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--sage);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--cream3);padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:62px}
+.nav-name{font-family:var(--serif);font-size:17px;color:var(--ink)}
+.nav-back{display:flex;align-items:center;gap:.5rem;font-size:13.5px;color:var(--ink2);font-weight:500;transition:color .15s}
+.nav-back:hover{color:var(--ink);text-decoration:none}
+
+.hero{max-width:800px;margin:0 auto;padding:4rem 2.5rem 2.5rem}
+.hero-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
+.hero h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em}
+.hero-desc{font-size:15.5px;color:var(--ink2);line-height:1.78;margin-bottom:1.5rem;max-width:640px}
+.tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.tag{font-size:12px;font-weight:500;padding:5px 13px;border-radius:100px;border:1px solid var(--cream3);color:var(--ink2);background:var(--cream)}
+.tag.sage{background:var(--sage-lt);border-color:transparent;color:var(--sage)}
+.tag.terra{background:var(--terra-lt);border-color:transparent;color:var(--terra)}
+.tag.sky{background:var(--sky-lt);border-color:transparent;color:var(--sky)}
+
+.result-banner{background:var(--terra-lt);border-left:3px solid var(--terra);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin-bottom:2rem}
+.result-banner-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.result-banner-stats{display:flex;flex-wrap:wrap;gap:2rem}
+.rstat-num{font-family:var(--serif);font-size:1.8rem;color:var(--ink);line-height:1}
+.rstat-label{font-size:12px;color:var(--ink2);line-height:1.35;margin-top:.2rem}
+
+.content{max-width:800px;margin:0 auto;padding:0 2.5rem 5rem}
+.section-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.6rem;margin-top:3rem}
+.content h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;color:var(--ink);margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--cream3)}
+.content h3{font-size:15px;font-weight:500;color:var(--ink);margin:1.25rem 0 .5rem}
+.content p{color:var(--ink2);margin-bottom:1rem;font-size:15px;line-height:1.78}
+.content p strong{color:var(--ink)}
+.content ul{list-style:none;margin-bottom:1.25rem}
+.content ul li{color:var(--ink2);font-size:15px;line-height:1.7;padding:.3rem 0 .3rem 1.1rem;position:relative;border-bottom:0.5px solid var(--cream3)}
+.content ul li:last-child{border-bottom:none}
+.content ul li::before{content:'\00b7';position:absolute;left:0;color:var(--terra);font-size:1.2rem;top:-.05rem}
+.content ul li strong{color:var(--ink)}
+code{background:var(--cream2);padding:2px 6px;border-radius:4px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.card{background:white;border:1px solid var(--cream3);border-radius:var(--r);padding:1.5rem;margin:1.25rem 0}
+.card-title{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:1rem}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}
+.stat{background:var(--cream);border-radius:var(--r-sm);padding:.85rem 1rem}
+.stat-num{font-family:var(--serif);font-size:1.6rem;color:var(--ink);line-height:1;margin-bottom:.2rem}
+.stat-label{font-size:12px;color:var(--ink3);line-height:1.3}
+
+.chart-img{width:100%;border-radius:var(--r);border:1px solid var(--cream3);display:block;background:white;cursor:zoom-in;transition:border-color .15s}
+a:hover>.chart-img{border-color:var(--ink3)}
+/* the results figures are ~2560px wide, so let them break out of the 720px text column */
+.fig-wide{margin:1.5rem 0}
+@media(min-width:1180px){.fig-wide{width:1080px;margin-left:-180px}}
+.chart-cap{font-size:12.5px;color:var(--ink3);margin:-.6rem 0 1.5rem;line-height:1.5}
+
+.ieee-card{background:white;border:1px solid var(--cream3);border-radius:var(--r-lg);padding:1.75rem;margin:1.25rem 0}
+.ieee-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin:1rem 0}
+.ieee-stat{background:var(--sage-lt);border-radius:var(--r-sm);padding:.75rem 1rem;text-align:center}
+.ieee-stat-num{font-family:var(--serif);font-size:1.4rem;color:var(--sage);line-height:1}
+.ieee-stat-label{font-size:11.5px;color:var(--ink2);margin-top:.2rem}
+
+.bar-section{background:var(--cream);border-radius:var(--r);padding:1.25rem;margin:1rem 0}
+.bar-label-row{font-size:11px;color:var(--ink3);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.bar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;font-size:12px}
+.bar-name{width:96px;text-align:right;color:var(--ink2);flex-shrink:0}
+.bar-track{flex:1;height:7px;background:var(--cream2);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px}
+.bar-fill.red{background:var(--terra)}
+.bar-fill.green{background:var(--sage)}
+.bar-fill.blue{background:var(--sky)}
+.bar-fill.sand{background:var(--sand)}
+.bar-val{width:66px;color:var(--ink);font-weight:500;font-size:11.5px}
+
+.severity-table{width:100%;border-collapse:collapse;font-size:13px;margin:1rem 0}
+.severity-table th{background:var(--cream2);color:var(--ink2);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--cream3)}
+.severity-table td{padding:.6rem 1rem;border-bottom:1px solid var(--cream3);color:var(--ink2)}
+.severity-table tr:last-child td{border-bottom:none}
+.severity-table tr:hover td{background:var(--cream)}
+.severity-table td.hl{color:var(--terra);font-weight:500}
+.table-wrap{overflow-x:auto;margin:1rem 0}
+.badge-yes{background:var(--terra-lt);color:var(--terra);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.badge-no{background:var(--cream2);color:var(--ink3);padding:2px 8px;border-radius:100px;font-size:11px}
+.badge-ok{background:var(--sage-lt);color:var(--sage);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+
+.ref-list{list-style:none;margin:0;counter-reset:refs}
+.ref-list li{counter-increment:refs;display:flex;gap:.75rem;padding:.5rem 0;border-bottom:0.5px solid var(--cream3);font-size:13px;color:var(--ink2);line-height:1.55}
+.ref-list li:last-child{border-bottom:none}
+.ref-list li::before{content:counter(refs);font-family:var(--serif);font-size:1rem;color:var(--terra);flex-shrink:0;width:20px;padding-top:.05rem}
+.ref-list li a{color:var(--sage)}
+
+.info-box{background:var(--sky-lt);border-left:3px solid var(--sky);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.info-box strong{color:var(--ink)}
+.warn-box{background:var(--sand-lt);border-left:3px solid var(--sand);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.warn-box strong{color:var(--ink)}
+.finding{background:white;border:1px solid var(--terra);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0}
+.finding-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.finding p{margin-bottom:0;color:var(--ink2)}
+.finding p+p{margin-top:.75rem}
+
+.github-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--cream);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:background .15s}
+.github-btn:hover{background:var(--ink2);text-decoration:none;color:var(--cream)}
+.outline-btn{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--ink);border:1.5px solid var(--cream3);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:all .15s}
+.outline-btn:hover{border-color:var(--ink3);text-decoration:none}
+
+
+/* long DOIs, URLs and code lines must not push the page sideways on mobile */
+code{overflow-wrap:anywhere;word-break:break-word}
+.ref-list li{overflow-wrap:anywhere}
+.content a{overflow-wrap:anywhere}
+footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:center;font-size:12.5px;color:var(--ink3)}
+
+@media(max-width:640px){
+  nav{padding:0 1.25rem}
+  .hero{padding:2.5rem 1.25rem 2rem}
+  .content{padding:0 1.25rem 4rem}
+  .result-banner-stats{gap:1.25rem}
+  .bar-name{width:74px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://chiharuma38.github.io/" class="nav-name">Chiharu Mamiya</a>
+  <a href="https://chiharuma38.github.io/#projects" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to projects
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Machine Learning &#183; Grid Monitoring &#183; Open Source</div>
+  <h1>Detecting Line Outages<br/>from Bus Measurements</h1>
+  <p class="hero-desc">Can a classifier detect that a transmission line has tripped, and identify which one, from bus voltage measurements alone? 2,800 power flow scenarios on the IEEE 39-bus network, a statistical baseline against a random forest and an SVM, and then a noise study that undoes the headline number on purpose.</p>
+  <div class="tags"><span class="tag sage">scikit-learn</span><span class="tag sage">Python</span><span class="tag sky">IEEE 39-bus</span><span class="tag terra">Noise sensitivity</span><span class="tag terra">Target leakage</span><span class="tag ">pandapower</span></div>
+
+  <div class="result-banner">
+    <div class="result-banner-label">Key results</div>
+    <div class="result-banner-stats"><div><div class="rstat-num">0.962</div><div class="rstat-label">SVM detection accuracy<br/>on clean data</div></div><div><div class="rstat-num">0.5%</div><div class="rstat-label">Noise at which every<br/>model hits chance</div></div><div><div class="rstat-num">0.886</div><div class="rstat-label">Top-1 location accuracy<br/>across 35 classes</div></div><div><div class="rstat-num">2,800</div><div class="rstat-label">Power flow scenarios<br/>generated</div></div></div>
+  </div>
+
+  <a href="https://github.com/chiharuma38/power-systems-portfolio/tree/main/03_fault_detection" class="github-btn" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+    View code on GitHub
+  </a>
+</div>
+
+<div class="content">
+
+  <div class="section-eyebrow">Background</div>
+  <h2>The question</h2>
+  <p>A transmission line trips. The control room needs to know two things quickly: that something has happened, and which element it was. Protection relays report the trip directly, but relay telemetry can be lost, delayed, or ambiguous during a disturbance. So a reasonable question is whether the same conclusion can be reached from <strong>bus voltage measurements alone</strong> &#8212; the kind of data a state estimator or a fleet of PMUs already has.</p>
+  <p>The literature on this is enthusiastic. Survey papers report accuracies in the high nineties routinely. This project reproduces that result, and then asks whether it survives contact with a real instrument.</p>
+
+  <div class="section-eyebrow">Dataset</div>
+  <h2>2,800 power flow scenarios</h2>
+  <p>The data is synthetic, generated on the IEEE 39-bus New England network as shipped with pandapower. Half the samples are healthy, half have one of 35 lines out of service, and every sample has its loads randomised by &#177;10 percent so the classifier cannot simply memorise a single operating point.</p>
+
+  <div class="ieee-card">
+    <div class="card-title">Generated dataset</div>
+    <div class="ieee-grid">
+      <div class="ieee-stat"><div class="ieee-stat-num">2,800</div><div class="ieee-stat-label">Power flow solutions</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">1,400</div><div class="ieee-stat-label">Healthy / 1,400 faulted</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">35</div><div class="ieee-stat-label">Line-outage classes</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">840</div><div class="ieee-stat-label">Held-out test samples</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">78</div><div class="ieee-stat-label">Honest features</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">&#177;10%</div><div class="ieee-stat-label">Load randomisation</div></div>
+    </div>
+  </div>
+
+  <div class="section-eyebrow">The interesting part</div>
+  <h2>The leakage problem, kept visible on purpose</h2>
+  <p>The first version of this scored almost perfectly and taught me nothing.</p>
+  <p>I had included line power flows in the feature vector. A line that is out of service reports no flow. So one feature in the vector was a zero sitting exactly where the answer was, and the classifier learned to read the label rather than the physics. This is <strong>target leakage</strong>, and it is the single most common way a machine learning result on power system data turns out to be worthless.</p>
+  <p>Rather than quietly fix it, the notebook keeps both feature sets so the size of the effect is measurable:</p>
+  <ul>
+    <li><strong>Set A, 78 features.</strong> Bus voltage magnitudes and angles only. The honest problem. Every headline number on this page uses Set A.</li>
+    <li><strong>Set B, 113 features.</strong> Set A plus line power flows. Leaky, kept as a control.</li>
+  </ul>
+
+  <div class="info-box">
+    <strong>Why keep the broken version:</strong> a portfolio that only shows working code proves you can write code that works on the problems you chose. Keeping the leaky feature set alongside the honest one shows the diagnosis, which is the harder and more transferable skill.
+  </div>
+
+  <div class="section-eyebrow">Results</div>
+  <h2>Detection: can we tell that something tripped?</h2>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Model</th><th>Features</th><th>Test accuracy</th><th>Precision</th><th>Recall</th></tr></thead><tbody><tr><td>Baseline, voltage z-rule (k=3)</td><td>78</td><td>0.827</td><td>0.960</td><td>0.683</td></tr><tr><td>Random forest</td><td>78</td><td>0.918</td><td>0.947</td><td>0.886</td></tr><tr><td><strong>SVM, RBF kernel</strong></td><td>78</td><td class="hl">0.962</td><td>0.997</td><td>0.926</td></tr><tr><td>Random forest on leaky Set B</td><td>113</td><td>0.961</td><td>0.969</td><td>0.952</td></tr></tbody></table></div>
+
+  <p>The five-fold cross-validation score on the training set for the random forest is <strong>0.917 &#177; 0.013</strong>, consistent with its 0.918 test score, so the model is not overfitting. The SVM with an RBF kernel is the best honest model at <strong>0.962</strong>.</p>
+  <p>Note the last row. The leaky Set B random forest scores 0.961 &#8212; essentially identical to the honest SVM. <strong>Leakage barely helps detection at all.</strong> Noticing that <em>something</em> changed is easy either way.</p>
+
+  <h2>Location: which of the 35 lines?</h2>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Metric</th><th>Set A (honest)</th><th>Set B (leaky)</th></tr></thead><tbody><tr><td>Top-1 accuracy, 35 classes</td><td class="hl">0.886</td><td>0.986</td></tr><tr><td>Top-3 accuracy</td><td>0.945</td><td>&#8212;</td></tr><tr><td>Random guessing</td><td>0.029</td><td>0.029</td></tr></tbody></table></div>
+
+  <p>Here leakage matters enormously: 0.986 against 0.886. Working out <em>what</em> changed is where the shortcut pays off, because the zeroed flow feature points straight at the specific line. That asymmetry &#8212; leakage worthless for detection, decisive for location &#8212; was not something I expected to find and is the second most useful thing this project produced.</p>
+
+  <div class="section-eyebrow">The negative result</div>
+  <h2>What happens when you add measurement noise</h2>
+  <p>All of the above is on clean simulated data, where a bus voltage is known to fifteen significant figures. Real instrument transformers and PMUs are not that good. So the last experiment adds Gaussian noise to the measurements and re-runs everything.</p>
+
+  <div class="bar-section"><div class="bar-label-row">Detection accuracy against measurement noise &#183; SVM, RBF kernel</div><div class="bar-row"><div class="bar-name">0%</div><div class="bar-track"><div class="bar-fill green" style="width:96%"></div></div><div class="bar-val">0.962</div></div><div class="bar-row"><div class="bar-name">0.1%</div><div class="bar-track"><div class="bar-fill green" style="width:96%"></div></div><div class="bar-val">0.957</div></div><div class="bar-row"><div class="bar-name">0.5%</div><div class="bar-track"><div class="bar-fill sand" style="width:54%"></div></div><div class="bar-val">0.538</div></div><div class="bar-row"><div class="bar-name">1%</div><div class="bar-track"><div class="bar-fill red" style="width:50%"></div></div><div class="bar-val">0.500</div></div><div class="bar-row"><div class="bar-name">2%</div><div class="bar-track"><div class="bar-fill red" style="width:50%"></div></div><div class="bar-val">0.500</div></div><div class="bar-row"><div class="bar-name">5%</div><div class="bar-track"><div class="bar-fill red" style="width:50%"></div></div><div class="bar-val">0.500</div></div></div>
+  <div class="bar-section"><div class="bar-label-row">Location accuracy against measurement noise &#183; 35 classes, chance = 0.029</div><div class="bar-row"><div class="bar-name">0%</div><div class="bar-track"><div class="bar-fill green" style="width:89%"></div></div><div class="bar-val">0.886</div></div><div class="bar-row"><div class="bar-name">0.1%</div><div class="bar-track"><div class="bar-fill green" style="width:87%"></div></div><div class="bar-val">0.871</div></div><div class="bar-row"><div class="bar-name">0.5%</div><div class="bar-track"><div class="bar-fill sand" style="width:50%"></div></div><div class="bar-val">0.498</div></div><div class="bar-row"><div class="bar-name">1%</div><div class="bar-track"><div class="bar-fill red" style="width:31%"></div></div><div class="bar-val">0.310</div></div><div class="bar-row"><div class="bar-name">2%</div><div class="bar-track"><div class="bar-fill red" style="width:18%"></div></div><div class="bar-val">0.176</div></div><div class="bar-row"><div class="bar-name">5%</div><div class="bar-track"><div class="bar-fill red" style="width:12%"></div></div><div class="bar-val">0.117</div></div></div>
+
+  <div class="finding">
+    <div class="finding-label">Key finding, and it is negative</div>
+    <p><strong>Every model collapses to chance at 0.5 percent measurement noise.</strong> At 0.1 percent the SVM still holds at 0.957. At 0.5 percent it is at 0.538, which for a balanced two-class problem is a coin flip. Location degrades in the same way, from 0.886 to 0.117 &#8212; worse than the 2.9 percent of random guessing would suggest is possible only because the classifier is confidently wrong rather than uncertain.</p>
+    <p>The reason is physical, not statistical. Removing one line from a well-meshed network at moderate loading barely moves the bus voltages; the remaining paths pick up the flow. The signature the classifier keys on is smaller than realistic instrument error.</p>
+    <p>The honest conclusion: <strong>0.962 on clean simulated data says almost nothing about whether this would work on a real system.</strong> That is the most useful thing this project taught me, and it is the reason the noise study exists at all.</p>
+  </div>
+
+  <p>This does not mean the approach is dead. It means the published accuracies need a noise column before they mean anything, and that a workable version would need either a much larger disturbance (a fault rather than a clean trip), time-series data rather than snapshots, or measurement redundancy from many more PMUs than this study assumes.</p>
+
+  <div class="fig-wide"><a href="../images/p03_results.png" target="_blank" rel="noopener" title="Open the full-resolution figure in a new tab"><img class="chart-img" src="../images/p03_results.png" alt="Figure showing model comparison, the confusion structure of the 35-class location problem, and the accuracy collapse against measurement noise." loading="lazy"/></a></div><div class="chart-cap">Generated by <code>src/train_evaluate.py</code>. Click the figure to open it full size. Every number on this page is reproducible from a clean clone.</div>
+
+  <div class="section-eyebrow">Honesty</div>
+  <h2>Limitations</h2>
+  <ul>
+    <li><strong>Synthetic data, one network, one topology.</strong> Nothing here has met a real measurement.</li>
+    <li><strong>Line outages only.</strong> No short circuits, no generator trips, no transformer outages &#8212; and a genuine fault produces a far larger signature than a clean disconnection, so this is the hardest version of the problem.</li>
+    <li><strong>Load variation is spatially independent,</strong> which real load is not. Real demand is correlated across a region, which would make the healthy class more structured and possibly easier to separate.</li>
+    <li><strong>Snapshots rather than time series.</strong> Most of the practical signal in outage detection is in the transient, which a steady-state power flow discards entirely.</li>
+    <li><strong>Gaussian noise is a crude model of instrument error.</strong> Real error has bias, quantisation and correlated components.</li>
+  </ul>
+
+  <div class="section-eyebrow">Output</div>
+  <h2>Files generated</h2>
+  <div class="card">
+    <div class="card-title">Results folder</div>
+    <ul>
+      <li><strong>p03_dataset.npz</strong>, the generated dataset, so the models can be retrained without re-running 2,800 power flows</li>
+      <li><strong>p03_baseline.csv</strong>, threshold tuning for the statistical z-rule baseline</li>
+      <li><strong>p03_detection.csv</strong>, model comparison with cross-validation, precision, recall and F1</li>
+      <li><strong>p03_noise.csv</strong>, the noise sensitivity sweep for all four estimators</li>
+      <li><strong>p03_summary.json</strong>, headline numbers</li>
+      <li><strong>p03_results.png</strong>, the figure above</li>
+    </ul>
+  </div>
+  <p>Generation runs in chunks so the dataset can be grown incrementally: <code>python src/generate_dataset.py 500 0</code>, repeated with different seed offsets.</p>
+
+  <div class="section-eyebrow">Tools and libraries</div>
+  <h2>Software used</h2>
+  <ul>
+    <li><strong>scikit-learn</strong>, random forest, RBF-kernel SVM, cross-validation and metrics.</li>
+    <li><strong>pandapower 2.14.1</strong>, the IEEE 39-bus network and the 2,800 power flow solutions behind the dataset.</li>
+    <li><strong>numpy 1.26.4</strong>, feature assembly and the noise injection.</li>
+    <li><strong>pandas 2.1.4</strong>, results tables and CSV export.</li>
+    <li><strong>Python 3.11</strong>, no commercial licences and no downloads.</li>
+  </ul>
+
+  <div class="section-eyebrow">References</div>
+  <h2>References</h2>
+  <ol class="ref-list"><li>Athay, T., Podmore, R., and Virmani, S. (1979). &#8220;A Practical Method for the Direct Analysis of Transient Stability.&#8221; <em>IEEE Transactions on Power Apparatus and Systems</em>, PAS-98(2), 573 to 584. The origin of the IEEE 39-bus case. <a href="https://doi.org/10.1109/TPAS.1979.319407" target="_blank" rel="noopener">doi.org/10.1109/TPAS.1979.319407</a></li><li>Illinois Center for a Smarter Electric Grid. &#8220;IEEE 39-Bus System.&#8221; <a href="https://icseg.iti.illinois.edu/ieee-39-bus-system/" target="_blank" rel="noopener">icseg.iti.illinois.edu</a></li><li>Mohammadi Shakiba, F., Azizi, S. M., Zhou, M., and Abusorrah, A. (2023). &#8220;Application of machine learning methods in fault detection and classification of power transmission lines: a survey.&#8221; <em>Artificial Intelligence Review</em>, 56, 5799 to 5836. <a href="https://doi.org/10.1007/s10462-022-10296-0" target="_blank" rel="noopener">doi.org/10.1007/s10462-022-10296-0</a></li><li>Rafique, F., Fu, L., and Mai, R. (2021). &#8220;End to end machine learning for fault detection and classification in power transmission lines.&#8221; <em>Electric Power Systems Research</em>, 199, 107430. <a href="https://doi.org/10.1016/j.epsr.2021.107430" target="_blank" rel="noopener">doi.org/10.1016/j.epsr.2021.107430</a></li><li>Pedregosa, F. et al. (2011). &#8220;Scikit-learn: Machine Learning in Python.&#8221; <em>Journal of Machine Learning Research</em>, 12, 2825 to 2830. <a href="https://scikit-learn.org" target="_blank" rel="noopener">scikit-learn.org</a></li><li>Thurner, L. et al. (2018). &#8220;pandapower.&#8221; <em>IEEE Transactions on Power Systems</em>, 33(6), 6510 to 6521. <a href="https://pandapower.org" target="_blank" rel="noopener">pandapower.org</a></li></ol>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--cream3)">
+    <a href="https://github.com/chiharuma38/power-systems-portfolio/tree/main/03_fault_detection" class="github-btn" target="_blank" rel="noopener">View code on GitHub</a>
+    <a href="https://chiharuma38.github.io/#projects" class="outline-btn">&#8592; Back to all projects</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>Chiharu Mamiya &#183; Power Systems Engineer &#183; KTH/KU Leuven SENSE MSc 2026 to 2028</p>
+</footer>
+
+</body>
+</html>

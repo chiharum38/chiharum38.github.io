@@ -105,6 +105,12 @@ nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.9);backdrop-
 .outline-btn{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--ink);border:1.5px solid var(--cream3);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:all .15s}
 .outline-btn:hover{border-color:var(--ink3);text-decoration:none}
 
+.table-wrap{overflow-x:auto;margin:1rem 0}
+
+/* long DOIs, URLs and code lines must not push the page sideways on mobile */
+code{overflow-wrap:anywhere;word-break:break-word}
+.ref-list li{overflow-wrap:anywhere}
+.content a{overflow-wrap:anywhere}
 footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:center;font-size:12.5px;color:var(--ink3)}
 
 @media(max-width:640px){
@@ -219,7 +225,7 @@ footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:cente
   <p>For each of the 35 lines in the network, the code takes that line out, re-solves the power flow, and checks two things. Then it puts the line back and moves to the next one.</p>
   <ul>
     <li><strong>Thermal criterion (loading &gt; 100%):</strong> No remaining line should carry more than 100% of its rated current. Exceeding the thermal rating causes the conductor to sag due to heat expansion, reducing ground clearance. Protection relays will trip the line automatically, potentially starting a cascade.</li>
-    <li><strong>Voltage criterion (outside 0.95–1.05 pu):</strong> Every bus must stay within the standard North American operating band. Below 0.95 pu causes equipment stress, motor stall, and eventual voltage collapse. Above 1.05 pu risks insulation breakdown on transformers and cables.</li>
+    <li><strong>Voltage criterion (outside 0.95 to 1.05 pu):</strong> Every bus must stay within the standard North American operating band. Below 0.95 pu causes equipment stress, motor stall, and eventual voltage collapse. Above 1.05 pu risks insulation breakdown on transformers and cables.</li>
   </ul>
 
   <h3>Step 3, Wind penetration scenario</h3>
@@ -232,7 +238,7 @@ footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:cente
   <h3>N-1 base case, severity ranking</h3>
   <p>Line 26 is the weakest point in this network. When it trips, another line jumps to 157.5% of its thermal rating. In a real grid that second line would trip within seconds on its protection relay. You are now looking at a potential cascade. This is exactly the type of finding that triggers a reinforcement study: where do we need to build new lines or upgrade existing ones?</p>
 
-  <table class="severity-table">
+  <div class="table-wrap"><table class="severity-table">
     <thead>
       <tr>
         <th>Rank</th>
@@ -255,7 +261,7 @@ footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:cente
       <tr><td>9</td><td>Line 7</td><td>103.3%</td><td>0.982</td><td><span class="badge-yes">Violation</span></td><td><span class="badge-yes">Violation</span></td></tr>
       <tr><td>10</td><td>Line 8</td><td>91.5%</td><td>0.982</td><td><span class="badge-no">Within limit</span></td><td><span class="badge-yes">Violation</span></td></tr>
     </tbody>
-  </table>
+  </table></div>
 
   <h3>Wind penetration scenario</h3>
   <div class="bar-section">
@@ -319,7 +325,7 @@ footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:cente
 </div>
 
 <footer>
-  <p>Chiharu Mamiya · Power Systems Engineer · KTH/KU Leuven SENSE MSc 2026–2028</p>
+  <p>Chiharu Mamiya · Power Systems Engineer · KTH/KU Leuven SENSE MSc 2026 to 2028</p>
 </footer>
 
 </body>

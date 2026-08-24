@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>A Parallel N-1 Contingency Screening Toolkit, Chiharu Mamiya</title>
+<meta name="description" content="A reusable ContingencyAnalyzer class screening all 173 single-line outages on the IEEE 118-bus network, with 2.85x parallel speed-up on 4 cores and results verified identical to the sequential run."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F7F4EF;--cream2:#EDE9E1;--cream3:#E3DDD3;
+  --ink:#1A1714;--ink2:#5C5650;--ink3:#9B948C;
+  --sage:#4A7C6F;--sage-lt:#D4E8E2;
+  --terra:#C4714A;--terra-lt:#F2DDD4;
+  --sand:#B89E7E;--sand-lt:#EDE4D6;
+  --sky:#4B7FA8;--sky-lt:#D5E6F2;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --r:16px;--r-sm:10px;--r-lg:24px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--sage);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--cream3);padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:62px}
+.nav-name{font-family:var(--serif);font-size:17px;color:var(--ink)}
+.nav-back{display:flex;align-items:center;gap:.5rem;font-size:13.5px;color:var(--ink2);font-weight:500;transition:color .15s}
+.nav-back:hover{color:var(--ink);text-decoration:none}
+
+.hero{max-width:800px;margin:0 auto;padding:4rem 2.5rem 2.5rem}
+.hero-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
+.hero h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em}
+.hero-desc{font-size:15.5px;color:var(--ink2);line-height:1.78;margin-bottom:1.5rem;max-width:640px}
+.tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.tag{font-size:12px;font-weight:500;padding:5px 13px;border-radius:100px;border:1px solid var(--cream3);color:var(--ink2);background:var(--cream)}
+.tag.sage{background:var(--sage-lt);border-color:transparent;color:var(--sage)}
+.tag.terra{background:var(--terra-lt);border-color:transparent;color:var(--terra)}
+.tag.sky{background:var(--sky-lt);border-color:transparent;color:var(--sky)}
+
+.result-banner{background:var(--terra-lt);border-left:3px solid var(--terra);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin-bottom:2rem}
+.result-banner-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.result-banner-stats{display:flex;flex-wrap:wrap;gap:2rem}
+.rstat-num{font-family:var(--serif);font-size:1.8rem;color:var(--ink);line-height:1}
+.rstat-label{font-size:12px;color:var(--ink2);line-height:1.35;margin-top:.2rem}
+
+.content{max-width:800px;margin:0 auto;padding:0 2.5rem 5rem}
+.section-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.6rem;margin-top:3rem}
+.content h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;color:var(--ink);margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--cream3)}
+.content h3{font-size:15px;font-weight:500;color:var(--ink);margin:1.25rem 0 .5rem}
+.content p{color:var(--ink2);margin-bottom:1rem;font-size:15px;line-height:1.78}
+.content p strong{color:var(--ink)}
+.content ul{list-style:none;margin-bottom:1.25rem}
+.content ul li{color:var(--ink2);font-size:15px;line-height:1.7;padding:.3rem 0 .3rem 1.1rem;position:relative;border-bottom:0.5px solid var(--cream3)}
+.content ul li:last-child{border-bottom:none}
+.content ul li::before{content:'\00b7';position:absolute;left:0;color:var(--terra);font-size:1.2rem;top:-.05rem}
+.content ul li strong{color:var(--ink)}
+code{background:var(--cream2);padding:2px 6px;border-radius:4px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.card{background:white;border:1px solid var(--cream3);border-radius:var(--r);padding:1.5rem;margin:1.25rem 0}
+.card-title{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:1rem}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}
+.stat{background:var(--cream);border-radius:var(--r-sm);padding:.85rem 1rem}
+.stat-num{font-family:var(--serif);font-size:1.6rem;color:var(--ink);line-height:1;margin-bottom:.2rem}
+.stat-label{font-size:12px;color:var(--ink3);line-height:1.3}
+
+.chart-img{width:100%;border-radius:var(--r);border:1px solid var(--cream3);display:block;background:white;cursor:zoom-in;transition:border-color .15s}
+a:hover>.chart-img{border-color:var(--ink3)}
+/* the results figures are ~2560px wide, so let them break out of the 720px text column */
+.fig-wide{margin:1.5rem 0}
+@media(min-width:1180px){.fig-wide{width:1080px;margin-left:-180px}}
+.chart-cap{font-size:12.5px;color:var(--ink3);margin:-.6rem 0 1.5rem;line-height:1.5}
+
+.ieee-card{background:white;border:1px solid var(--cream3);border-radius:var(--r-lg);padding:1.75rem;margin:1.25rem 0}
+.ieee-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin:1rem 0}
+.ieee-stat{background:var(--sage-lt);border-radius:var(--r-sm);padding:.75rem 1rem;text-align:center}
+.ieee-stat-num{font-family:var(--serif);font-size:1.4rem;color:var(--sage);line-height:1}
+.ieee-stat-label{font-size:11.5px;color:var(--ink2);margin-top:.2rem}
+
+.bar-section{background:var(--cream);border-radius:var(--r);padding:1.25rem;margin:1rem 0}
+.bar-label-row{font-size:11px;color:var(--ink3);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.bar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;font-size:12px}
+.bar-name{width:96px;text-align:right;color:var(--ink2);flex-shrink:0}
+.bar-track{flex:1;height:7px;background:var(--cream2);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px}
+.bar-fill.red{background:var(--terra)}
+.bar-fill.green{background:var(--sage)}
+.bar-fill.blue{background:var(--sky)}
+.bar-fill.sand{background:var(--sand)}
+.bar-val{width:66px;color:var(--ink);font-weight:500;font-size:11.5px}
+
+.severity-table{width:100%;border-collapse:collapse;font-size:13px;margin:1rem 0}
+.severity-table th{background:var(--cream2);color:var(--ink2);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--cream3)}
+.severity-table td{padding:.6rem 1rem;border-bottom:1px solid var(--cream3);color:var(--ink2)}
+.severity-table tr:last-child td{border-bottom:none}
+.severity-table tr:hover td{background:var(--cream)}
+.severity-table td.hl{color:var(--terra);font-weight:500}
+.table-wrap{overflow-x:auto;margin:1rem 0}
+.badge-yes{background:var(--terra-lt);color:var(--terra);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.badge-no{background:var(--cream2);color:var(--ink3);padding:2px 8px;border-radius:100px;font-size:11px}
+.badge-ok{background:var(--sage-lt);color:var(--sage);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+
+.ref-list{list-style:none;margin:0;counter-reset:refs}
+.ref-list li{counter-increment:refs;display:flex;gap:.75rem;padding:.5rem 0;border-bottom:0.5px solid var(--cream3);font-size:13px;color:var(--ink2);line-height:1.55}
+.ref-list li:last-child{border-bottom:none}
+.ref-list li::before{content:counter(refs);font-family:var(--serif);font-size:1rem;color:var(--terra);flex-shrink:0;width:20px;padding-top:.05rem}
+.ref-list li a{color:var(--sage)}
+
+.info-box{background:var(--sky-lt);border-left:3px solid var(--sky);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.info-box strong{color:var(--ink)}
+.warn-box{background:var(--sand-lt);border-left:3px solid var(--sand);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.warn-box strong{color:var(--ink)}
+.finding{background:white;border:1px solid var(--terra);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0}
+.finding-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.finding p{margin-bottom:0;color:var(--ink2)}
+.finding p+p{margin-top:.75rem}
+
+.github-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--cream);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:background .15s}
+.github-btn:hover{background:var(--ink2);text-decoration:none;color:var(--cream)}
+.outline-btn{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--ink);border:1.5px solid var(--cream3);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:all .15s}
+.outline-btn:hover{border-color:var(--ink3);text-decoration:none}
+
+
+/* long DOIs, URLs and code lines must not push the page sideways on mobile */
+code{overflow-wrap:anywhere;word-break:break-word}
+.ref-list li{overflow-wrap:anywhere}
+.content a{overflow-wrap:anywhere}
+footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:center;font-size:12.5px;color:var(--ink3)}
+
+@media(max-width:640px){
+  nav{padding:0 1.25rem}
+  .hero{padding:2.5rem 1.25rem 2rem}
+  .content{padding:0 1.25rem 4rem}
+  .result-banner-stats{gap:1.25rem}
+  .bar-name{width:74px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://chiharuma38.github.io/" class="nav-name">Chiharu Mamiya</a>
+  <a href="https://chiharuma38.github.io/#projects" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to projects
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Grid Software &#183; Parallel Computing &#183; Open Source</div>
+  <h1>A Parallel N-1 Contingency<br/>Screening Toolkit</h1>
+  <p class="hero-desc">N-1 screening is embarrassingly parallel, since every contingency is independent. How much speed-up does that actually deliver, and how do you prove the parallel version returns exactly the same answers as the sequential one? A reusable class, 173 contingencies on the IEEE 118-bus network, and a scaling result that is deliberately sub-linear.</p>
+  <div class="tags"><span class="tag sage">Python OOP</span><span class="tag sage">multiprocessing</span><span class="tag sage">pandapower</span><span class="tag sky">IEEE 118-bus</span><span class="tag terra">EU 2017/1485</span><span class="tag terra">NERC TPL-001</span></div>
+
+  <div class="result-banner">
+    <div class="result-banner-label">Key results</div>
+    <div class="result-banner-stats"><div><div class="rstat-num">2.85&#215;</div><div class="rstat-label">Speed-up on 4 cores,<br/>64.9% less runtime</div></div><div><div class="rstat-num">173</div><div class="rstat-label">Contingencies screened,<br/>173 converged</div></div><div><div class="rstat-num">619.3%</div><div class="rstat-label">Worst-case loading,<br/>outage of line 46</div></div><div><div class="rstat-num">100%</div><div class="rstat-label">Parallel results verified<br/>identical to sequential</div></div></div>
+  </div>
+
+  <a href="https://github.com/chiharuma38/power-systems-portfolio/tree/main/05_contingency_toolkit" class="github-btn" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+    View code on GitHub
+  </a>
+</div>
+
+<div class="content">
+
+  <div class="section-eyebrow">Background</div>
+  <h2>From study to tool</h2>
+  <p>The first four projects in this portfolio are studies: each asks a question, answers it, and stops. This one is different. It is a <strong>tool</strong> &#8212; a reusable <code>ContingencyAnalyzer</code> class that takes any pandapower network, screens every single-line outage, and reports violations, either sequentially or across worker processes.</p>
+  <p>N-1 security is the underlying requirement in both major reliability frameworks. In Europe the (N-1) criterion is defined in Commission Regulation (EU) 2017/1485, Article 3. In North America the planning equivalent is NERC TPL-001. Screening is the routine operation that checks it, and on a large network it is run constantly.</p>
+  <p>N-1 screening is also <em>embarrassingly parallel</em>: every contingency is independent of every other, so nothing needs to be shared between them. The obvious question is how much speed-up that actually delivers &#8212; and the honest version of that question requires proving the parallel path returns exactly the same answers as the sequential one before quoting any timing at all.</p>
+
+  <div class="section-eyebrow">Honesty, up front</div>
+  <h2>The modelling assumption that drives every violation count</h2>
+  <div class="warn-box">
+    <strong>The line ratings in the IEEE 118-bus case are invented.</strong> The University of Washington archive is explicit that the MVA limits were not part of the original 1962 AEP data. With pandapower&#8217;s defaults, the base case peaks at 4.5 percent loading, so nothing ever violates and screening is pointless.
+    <br/><br/>
+    I derive ratings as 1.3&#215; the base-case current with a floor, which puts the base case at 76.92 percent. <strong>Every violation count below depends on that choice.</strong> The timing results, which are the actual subject of the project, do not.
+  </div>
+  <p>Stating this before the results rather than in a footnote is deliberate. A reader who takes &#8220;129 of 173 contingencies violate&#8221; as a property of the IEEE 118-bus network would be misled; it is a property of my ratings assumption applied to that network.</p>
+
+  <div class="section-eyebrow">Network data</div>
+  <h2>The IEEE 118-bus test case</h2>
+
+  <div class="ieee-card">
+    <div class="card-title">Base case</div>
+    <div class="ieee-grid">
+      <div class="ieee-stat"><div class="ieee-stat-num">118</div><div class="ieee-stat-label">Buses</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">173</div><div class="ieee-stat-label">Transmission lines</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">13</div><div class="ieee-stat-label">Transformers</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">53</div><div class="ieee-stat-label">Generators</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">4,242</div><div class="ieee-stat-label">MW total load</div></div>
+      <div class="ieee-stat"><div class="ieee-stat-num">76.92%</div><div class="ieee-stat-label">Base-case max loading</div></div>
+    </div>
+  </div>
+  <p>Base-case voltages run from 0.943 to 1.050 per unit. The network loads in one line: <code>net = pandapower.networks.case118()</code>.</p>
+
+  <div class="section-eyebrow">Methodology</div>
+  <h2>What the class does</h2>
+  <p><code>ContingencyAnalyzer</code> takes a network and, for each of the 173 lines: removes it from service, re-solves AC power flow by Newton-Raphson, records the maximum line loading, the voltage extremes and the violation counts, then restores the line and moves on. It exposes a single entry point:</p>
+  <div class="card">
+    <div class="card-title">Usage</div>
+    <ul>
+      <li><code>from src.contingency import ContingencyAnalyzer, build_net</code></li>
+      <li><code>results, runtime = ContingencyAnalyzer(build_net()).screen(parallel=True, workers=4)</code></li>
+      <li><code>results.sort_values("max_loading", ascending=False).head()</code></li>
+    </ul>
+  </div>
+  <p>The parallel path uses <code>concurrent.futures.ProcessPoolExecutor</code>. Before any timing is reported, the sequential and parallel result frames are compared element by element and must be identical.</p>
+
+  <div class="section-eyebrow">Results, part one</div>
+  <h2>Screening the network</h2>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Contingencies screened</td><td>173</td></tr><tr><td>Converged</td><td class="hl">173 of 173</td></tr><tr><td>With thermal violations</td><td>129</td></tr><tr><td>With voltage violations</td><td>12</td></tr><tr><td>Worst case</td><td class="hl">line 46 at 619.3%</td></tr><tr><td>Sequential and parallel results identical</td><td><span class="badge-ok">Verified</span></td></tr></tbody></table></div>
+
+  <p>All 173 contingencies converged; none diverged. The worst case is the outage of line 46, which drives another element to <strong>619.3 percent</strong> of its rating &#8212; a value that in a real system means the second element trips within seconds on its own protection, which is precisely the cascade the N-1 criterion exists to prevent.</p>
+
+  <h3>Ten most severe contingencies</h3>
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Rank</th><th>Outaged line</th><th>Max loading</th><th>Elements over limit</th><th>Min voltage (p.u.)</th></tr></thead><tbody><tr><td>1</td><td>Line 46</td><td class="hl">619.3%</td><td>6</td><td>0.943</td></tr><tr><td>2</td><td>Line 7</td><td>571.9%</td><td class="hl">46</td><td>0.939</td></tr><tr><td>3</td><td>Line 6</td><td>571.8%</td><td class="hl">46</td><td>0.939</td></tr><tr><td>4</td><td>Line 85</td><td>554.2%</td><td>2</td><td>0.943</td></tr><tr><td>5</td><td>Line 128</td><td>473.9%</td><td>12</td><td>0.943</td></tr><tr><td>6</td><td>Line 154</td><td>455.4%</td><td>5</td><td>0.943</td></tr><tr><td>7</td><td>Line 108</td><td>452.8%</td><td>3</td><td>0.943</td></tr><tr><td>8</td><td>Line 34</td><td>446.3%</td><td>23</td><td>0.940</td></tr><tr><td>9</td><td>Line 126</td><td>434.7%</td><td>3</td><td>0.943</td></tr><tr><td>10</td><td>Line 89</td><td>380.8%</td><td>25</td><td>0.943</td></tr></tbody></table></div>
+
+  <p>Note that severity by maximum loading and severity by number of violated elements are different rankings. Line 46 produces the single highest overloaded element, but the outage of line 7 or line 6 overloads <strong>46 elements at once</strong>, which is arguably the worse operational event. Contingency screening tools generally report both, and this one does too.</p>
+
+  <div class="section-eyebrow">Results, part two</div>
+  <h2>Parallel scaling: what does it actually buy?</h2>
+
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Workers</th><th>Runtime</th><th>Speed-up</th><th>Runtime reduction</th></tr></thead><tbody><tr><td>1 (sequential)</td><td>4.90 s</td><td>1.00&#215;</td><td>0%</td></tr><tr><td>2</td><td>2.83 s</td><td>1.73&#215;</td><td>42.1%</td></tr><tr><td>4</td><td class="hl">1.72 s</td><td class="hl">2.85&#215;</td><td class="hl">64.9%</td></tr></tbody></table></div>
+  <div class="bar-section"><div class="bar-label-row">Runtime to screen 173 contingencies &#183; IEEE 118-bus, 4-core machine</div><div class="bar-row"><div class="bar-name">1 worker</div><div class="bar-track"><div class="bar-fill red" style="width:100%"></div></div><div class="bar-val">4.90 s</div></div><div class="bar-row"><div class="bar-name">2 workers</div><div class="bar-track"><div class="bar-fill sand" style="width:58%"></div></div><div class="bar-val">2.83 s</div></div><div class="bar-row"><div class="bar-name">4 workers</div><div class="bar-track"><div class="bar-fill green" style="width:35%"></div></div><div class="bar-val">1.72 s</div></div></div>
+  <div class="bar-section"><div class="bar-label-row">Speed-up at 4 workers &#183; ideal against measured</div><div class="bar-row"><div class="bar-name">Ideal, 4 cores</div><div class="bar-track"><div class="bar-fill sand" style="width:100%"></div></div><div class="bar-val">4.00&#215;</div></div><div class="bar-row"><div class="bar-name">Measured</div><div class="bar-track"><div class="bar-fill green" style="width:71%"></div></div><div class="bar-val">2.85&#215;</div></div></div>
+
+  <div class="finding">
+    <div class="finding-label">Key finding</div>
+    <p><strong>2.85&#215; speed-up on 4 cores &#8212; a 64.9 percent runtime reduction &#8212; with results verified identical to the sequential run.</strong></p>
+    <p>Scaling is sub-linear: 2.85&#215; where the ideal would be 4&#215;. Process startup, pickling the network out to each worker and collecting results back are fixed costs that do not shrink as cores are added, and on a problem this small they are a visible fraction of the total. <strong>The gap between 2.85 and 4 is the interesting part, not the speed-up itself.</strong></p>
+  </div>
+
+  <h3>Two implementation details that were necessary, and neither is obvious</h3>
+  <ul>
+    <li><strong>The worker function must be defined at module level.</strong> <code>ProcessPoolExecutor</code> pickles the callable to send it to a subprocess, and a bound method or a closure fails with a pickling error that does not point anywhere near the actual cause. This costs an hour if you have not hit it before.</li>
+    <li><strong>The network is passed once per worker through an initialiser, not once per task.</strong> Sending a copy of the network with each of the 173 tasks costs more in serialisation than the power flow costs to solve &#8212; the parallel version can end up slower than the sequential one. This is the difference between parallelism that works and parallelism that looks like it should.</li>
+  </ul>
+
+  <div class="info-box">
+    <strong>The larger point about optimisation:</strong> production contingency tools do not get their speed from parallelism. They run a fast DC pre-screen and only solve full AC for the marginal cases, which is a far larger saving than throwing cores at the problem. Parallelism is the easy win; algorithmic selection is the real one.
+  </div>
+
+  <div class="fig-wide"><a href="../images/p05_results.png" target="_blank" rel="noopener" title="Open the full-resolution figure in a new tab"><img class="chart-img" src="../images/p05_results.png" alt="Figure showing the contingency severity ranking across all 173 line outages and the parallel scaling curve against worker count." loading="lazy"/></a></div><div class="chart-cap">Generated by <code>src/contingency.py</code>. Click the figure to open it full size. Timings measured on a 4-core machine; every number is reproducible from a clean clone.</div>
+
+  <div class="section-eyebrow">Honesty</div>
+  <h2>Limitations</h2>
+  <ul>
+    <li><strong>Line outages only.</strong> Generator and transformer contingencies are the obvious extension and the class is structured to take them.</li>
+    <li><strong>AC power flow for every case,</strong> as noted above. The DC pre-screen is the bigger optimisation and is not implemented here.</li>
+    <li><strong>Derived thermal ratings.</strong> Every violation count is conditional on the 1.3&#215; assumption stated at the top of this page.</li>
+    <li><strong>Only four cores.</strong> The interesting scaling questions begin at 32 or more, where communication cost and memory bandwidth start to dominate differently.</li>
+    <li><strong>No N-1-1 or common-mode outages,</strong> which is where real transmission planning spends much of its effort.</li>
+  </ul>
+
+  <div class="section-eyebrow">Output</div>
+  <h2>Files generated</h2>
+  <div class="card">
+    <div class="card-title">Results folder</div>
+    <ul>
+      <li><strong>p05_summary.json</strong>, base-case description, violation counts, timings at 1, 2 and 4 workers, and the identical-results flag</li>
+      <li><strong>p05_contingency_118bus.csv</strong>, the full 173-row result table ranked by severity, with max loading, voltage extremes and violation counts per case</li>
+      <li><strong>p05_results.png</strong>, the figure above</li>
+    </ul>
+  </div>
+
+  <div class="section-eyebrow">Tools and libraries</div>
+  <h2>Software used</h2>
+  <ul>
+    <li><strong>pandapower 2.14.1</strong>, the IEEE 118-bus network and AC power flow.</li>
+    <li><strong>concurrent.futures</strong>, <code>ProcessPoolExecutor</code> with a per-worker initialiser.</li>
+    <li><strong>pandas 2.1.4</strong>, the result frame and the sequential-versus-parallel equality check.</li>
+    <li><strong>numpy 1.26.4</strong>, the derived ratings and violation arithmetic.</li>
+    <li><strong>matplotlib</strong>, the results figure.</li>
+    <li><strong>Python 3.11</strong>, no commercial licences and no downloads.</li>
+  </ul>
+
+  <div class="section-eyebrow">References</div>
+  <h2>References</h2>
+  <ol class="ref-list"><li>Christie, R. (1993). &#8220;118 Bus Power Flow Test Case.&#8221; Power Systems Test Case Archive, University of Washington. The source that states the line ratings were not part of the original data. <a href="https://labs.ece.uw.edu/pstca/pf118/pg_tca118bus.htm" target="_blank" rel="noopener">labs.ece.uw.edu</a></li><li>Commission Regulation (EU) 2017/1485 of 2 August 2017 establishing a guideline on electricity transmission system operation. <em>Official Journal of the European Union.</em> Article 3 defines the (N-1) criterion. <a href="https://eur-lex.europa.eu/eli/reg/2017/1485/oj/eng" target="_blank" rel="noopener">eur-lex.europa.eu</a></li><li>NERC. &#8220;TPL-001-5.1: Transmission System Planning Performance Requirements.&#8221; <a href="https://www.nerc.com/pa/Stand/Pages/TPL0015.aspx" target="_blank" rel="noopener">nerc.com</a></li><li>Illinois Center for a Smarter Electric Grid. &#8220;IEEE 118-Bus System.&#8221; <a href="https://icseg.iti.illinois.edu/ieee-118-bus-system/" target="_blank" rel="noopener">icseg.iti.illinois.edu</a></li><li>Thurner, L. et al. (2018). &#8220;pandapower: An Open-Source Python Tool for Convenient Modeling, Analysis, and Optimization of Electric Power Systems.&#8221; <em>IEEE Transactions on Power Systems</em>, 33(6), 6510 to 6521. <a href="https://pandapower.org" target="_blank" rel="noopener">pandapower.org</a></li></ol>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--cream3)">
+    <a href="https://github.com/chiharuma38/power-systems-portfolio/tree/main/05_contingency_toolkit" class="github-btn" target="_blank" rel="noopener">View code on GitHub</a>
+    <a href="https://chiharuma38.github.io/#projects" class="outline-btn">&#8592; Back to all projects</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>Chiharu Mamiya &#183; Power Systems Engineer &#183; KTH/KU Leuven SENSE MSc 2026 to 2028</p>
+</footer>
+
+</body>
+</html>
