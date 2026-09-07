@@ -1,0 +1,156 @@
+# Who is allowed to edit
+#
+# The github backend hands editing rights to GitHub itself: to sign in here you
+# must have write access to the repository below. That is Chiharu's account and
+# nobody else's, so no separate password list is needed and there is no login
+# box on the public site that anyone could attack. To revoke access to a
+# machine, revoke the authorisation in GitHub settings.
+
+backend:
+  name: github
+  repo: chiharuma38/chiharuma38.github.io
+  branch: main
+  commit_messages:
+    create: 'Add note: {{slug}}'
+    update: 'Update {{collection}}: {{slug}}'
+    delete: 'Delete {{collection}}: {{slug}}'
+    uploadMedia: 'Add image: {{path}}'
+    deleteMedia: 'Delete image: {{path}}'
+
+media_folder: "images/notes"
+public_folder: "/images/notes"
+
+publish_mode: simple
+site_url: https://chiharuma38.github.io
+display_url: https://chiharuma38.github.io
+logo_url: https://chiharuma38.github.io/images/chiharu_profile_pic.png
+
+collections:
+  - name: notes
+    label: "Notes"
+    label_singular: "Note"
+    folder: "content/notes"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{fields.slug}}"
+    summary: "{{title}}"
+    sortable_fields: ['date', 'title']
+    view_groups:
+      - label: Status
+        field: status
+    fields:
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        hint: "Put *asterisks* around a few words to make them italic and terracotta, the way the homepage headline does."
+
+      - label: "URL name"
+        name: "slug"
+        widget: "string"
+        pattern: ['^[a-z0-9-]+$', "Lowercase letters, numbers and hyphens only."]
+        hint: "Becomes the web address, e.g. europe-clean-compute gives /notes/europe-clean-compute.html"
+
+      - label: "Date"
+        name: "date"
+        widget: "datetime"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        picker_utc: true
+
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        default: "upcoming"
+        options:
+          - { label: "Published, live on the site", value: "published" }
+          - { label: "In progress, shows as a placeholder card", value: "upcoming" }
+          - { label: "Queued, shows as a placeholder card", value: "queued" }
+        hint: "Only Published notes get their own page. The newest published note becomes the big featured card."
+
+      - label: "Reading time"
+        name: "readingTime"
+        widget: "string"
+        required: false
+        hint: "e.g. 6 min read"
+
+      - label: "Category"
+        name: "category"
+        widget: "string"
+        required: false
+        hint: "Short label on the card, e.g. Grids and digitalisation"
+
+      - label: "Cover image URL"
+        name: "image"
+        widget: "string"
+        required: false
+        hint: "Paste any image address, or upload one under Media and paste its path."
+
+      - label: "Card summary"
+        name: "excerpt"
+        widget: "text"
+        hint: "The paragraph on the homepage card. Two or three sentences."
+
+      - label: "Opening paragraph"
+        name: "lede"
+        widget: "text"
+        required: false
+        hint: "The large serif paragraph at the top of the article."
+
+      - label: "Source: article title"
+        name: "sourceTitle"
+        widget: "string"
+        required: false
+      - label: "Source: author"
+        name: "sourceAuthor"
+        widget: "string"
+        required: false
+      - label: "Source: publication"
+        name: "sourcePublication"
+        widget: "string"
+        required: false
+      - label: "Source: date"
+        name: "sourceDate"
+        widget: "string"
+        required: false
+      - label: "Source: link"
+        name: "sourceUrl"
+        widget: "string"
+        required: false
+
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        field: { label: "Tag", name: "tag", widget: "string" }
+        hint: "Colours cycle automatically: terracotta, sage, blue, plain."
+
+      - label: "Key numbers"
+        name: "stats"
+        widget: "list"
+        required: false
+        summary: "{{fields.num}}"
+        fields:
+          - { label: "Number", name: "num", widget: "string" }
+          - { label: "What it means", name: "label", widget: "string" }
+
+      - label: "What I'm reading next"
+        name: "readingNext"
+        widget: "list"
+        required: false
+        field: { label: "Item", name: "item", widget: "string" }
+
+      - label: "Body"
+        name: "body"
+        widget: "markdown"
+        required: false
+        hint: "Use ## for a section heading. A blockquote (>) becomes the green pull-quote box."
+
+  - name: homepage
+    label: "Homepage wording"
+    files:
+      - name: notes_section
+        label: "Notes section heading and intro"
+        file: "content/site.json"
+        fields:
+          - { label: "Eyebrow", name: "notesEyebrow", widget: "string" }
+          - { label: "Heading", name: "notesHeading", widget: "string" }
+          - { label: "Intro paragraph", name: "notesIntro", widget: "text" }
