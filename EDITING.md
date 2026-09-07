@@ -62,3 +62,32 @@ in this repository.
 The site is only as protected as the GitHub account that can change it, so turn
 on two-factor authentication at **GitHub, Settings, Password and
 authentication**. That is the real lock on this door.
+
+## Going private, in a safe order
+
+Doing this in the wrong order takes the site offline for a while, so:
+
+1. **Netlify first.** Set the site up while the repository is still public and
+   confirm it builds and serves correctly at its netlify.app address.
+2. **Custom domain second.** Buy the domain, add it under Netlify **Domain
+   management**, and let the certificate issue. Confirm the site loads there.
+3. **Make the repository private last.** GitHub, **Settings, General, Danger
+   Zone, Change visibility**. Netlify keeps building. `chiharuma38.github.io`
+   stops working at this point, so update the links on your CV and LinkedIn to
+   the new domain first.
+
+## Stop new commits leaking your email
+
+Your history currently contains three of your addresses. Making the repository
+private hides them. To keep new commits from adding more:
+
+1. GitHub, **Settings, Emails**, tick **Keep my email addresses private** and
+   copy the noreply address it shows, which looks like
+   `12345678+chiharuma38@users.noreply.github.com`.
+2. Then run, once:
+
+       git config --global user.email "<that noreply address>"
+       git config --global user.name "Chiharu Mamiya"
+
+The CMS commits through GitHub directly, so anything published from `/admin`
+already uses whatever address GitHub has configured.
