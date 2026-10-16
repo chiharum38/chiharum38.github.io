@@ -355,7 +355,8 @@ footer{border-top:1px solid var(--cream3);padding:2.5rem;text-align:center;font-
   <a class="nav-name" href="#top">Chiharu Mamiya</a>
   <ul class="nav-links">
     <li><a href="#notes">Notes</a></li>
-    <li><a href="#projects">Power Systems</a></li>
+    <li><a href="#markets">Markets</a></li>
+    <li><a href="#projects">Engineering</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#earlier">Earlier Work</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -443,11 +444,31 @@ footer{border-top:1px solid var(--cream3);padding:2.5rem;text-align:center;font-
 
 <hr class="section-divider"/>
 
+<!-- MARKETS AND FINANCE PROJECTS -->
+<section class="section band-b" id="markets">
+  <div class="dark-band">
+    <h2 class="db-title">Markets and finance projects</h2>
+    <p class="db-sub">Where the money in a power system comes from: price formation, ancillary-service revenue and what a storage asset is worth to an investor. Built on public ENTSO-E and Svenska kraftnät data. Click any panel to open its project.</p>
+    <div class="expand-gallery">
+      <div class="exp-panel active" data-i="0" data-href="projects/nordic_bess.html" style="--bg:url('https://images.unsplash.com/photo-1548337138-e87d889cc369?w=900&q=80&auto=format&fit=crop'),linear-gradient(160deg,#5a3a1e,#2a1a0c)">
+        <span class="exp-tab"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg></span></span>
+        <div class="exp-info"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg></span><div><div class="exp-title">Nordic BESS Revenue Stack</div><div class="exp-sub">SE3 · FCR-D + FCR-N + day-ahead · in progress</div></div></div>
+      </div>
+      <div class="exp-panel" data-i="1" data-href="projects/storage_optimizer.html" style="--bg:url('https://images.unsplash.com/photo-1509391366360-2e959784a276?w=900&q=80&auto=format&fit=crop'),linear-gradient(160deg,#1f5135,#0f2c1d)">
+        <span class="exp-tab"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg></span></span>
+        <div class="exp-info"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg></span><div><div class="exp-title">Battery Dispatch</div><div class="exp-sub">50 MW · zero revenue below a 1.181 ratio</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
 <!-- POWER SYSTEMS PROJECTS -->
 <section class="section" id="projects">
   <div class="dark-band">
     <h2 class="db-title">Grid engineering projects</h2>
-    <p class="db-sub">Automated power-system studies built on open-source tools and public data. Click any panel to open its project.</p>
+    <p class="db-sub">How the grid itself behaves: contingency analysis, transmission feasibility and fault detection, automated on open-source tools and public test systems. Click any panel to open its project.</p>
     <div class="expand-gallery">
       <div class="exp-panel active" data-i="0" data-href="projects/n1_contingency.html" style="--bg:url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=900&q=80&auto=format&fit=crop'),linear-gradient(160deg,#1f4d4a,#0e2a36)">
         <span class="exp-tab"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></span>
@@ -461,11 +482,7 @@ footer{border-top:1px solid var(--cream3);padding:2.5rem;text-align:center;font-
         <span class="exp-tab"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span></span>
         <div class="exp-info"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><div><div class="exp-title">ML Fault Detection</div><div class="exp-sub">0.962 clean · chance at 0.5% noise</div></div></div>
       </div>
-      <div class="exp-panel" data-i="3" data-href="projects/storage_optimizer.html" style="--bg:url('https://images.unsplash.com/photo-1509391366360-2e959784a276?w=900&q=80&auto=format&fit=crop'),linear-gradient(160deg,#1f5135,#0f2c1d)">
-        <span class="exp-tab"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg></span></span>
-        <div class="exp-info"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg></span><div><div class="exp-title">Battery Dispatch</div><div class="exp-sub">50 MW · zero revenue below a 1.181 ratio</div></div></div>
-      </div>
-      <div class="exp-panel" data-i="4" data-href="projects/contingency_toolkit.html" style="--bg:url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=900&q=80&auto=format&fit=crop'),linear-gradient(160deg,#4a4036,#211c17)">
+      <div class="exp-panel" data-i="3" data-href="projects/contingency_toolkit.html" style="--bg:url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=900&q=80&auto=format&fit=crop'),linear-gradient(160deg,#4a4036,#211c17)">
         <span class="exp-tab"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span></span>
         <div class="exp-info"><span class="exp-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span><div><div class="exp-title">Parallel N-1 Toolkit</div><div class="exp-sub">2.85× on 4 cores · IEEE 118-bus</div></div></div>
       </div>
@@ -807,7 +824,8 @@ footer{border-top:1px solid var(--cream3);padding:2.5rem;text-align:center;font-
   if(!panels.length) return;
   panels.forEach(function(p){
     p.addEventListener('mouseenter',function(){
-      panels.forEach(function(q){q.classList.toggle('active',q===p);});
+      var gal=p.parentNode;
+      [].forEach.call(gal.querySelectorAll('.exp-panel'),function(q){q.classList.toggle('active',q===p);});
     });
     p.addEventListener('click',function(){
       var h=p.getAttribute('data-href');

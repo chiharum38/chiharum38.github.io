@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nordic BESS Revenue Stack, Chiharu Mamiya</title>
+<meta name="description" content="A 10 MW battery in Swedish bidding zone SE3, co-optimised across FCR-D, FCR-N and day-ahead arbitrage on ENTSO-E and Svenska kraftnät data. Work in progress: dispatch optimiser built and tested, real-data calibration next."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F7F4EF;--cream2:#EDE9E1;--cream3:#E3DDD3;
+  --ink:#1A1714;--ink2:#5C5650;--ink3:#9B948C;
+  --sage:#4A7C6F;--sage-lt:#D4E8E2;
+  --terra:#C4714A;--terra-lt:#F2DDD4;
+  --sand:#B89E7E;--sand-lt:#EDE4D6;
+  --sky:#4B7FA8;--sky-lt:#D5E6F2;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --r:16px;--r-sm:10px;--r-lg:24px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--sage);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--cream3);padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:62px}
+.nav-name{font-family:var(--serif);font-size:17px;color:var(--ink)}
+.nav-back{display:flex;align-items:center;gap:.5rem;font-size:13.5px;color:var(--ink2);font-weight:500;transition:color .15s}
+.nav-back:hover{color:var(--ink);text-decoration:none}
+
+.hero{max-width:800px;margin:0 auto;padding:4rem 2.5rem 2.5rem}
+.hero-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
+.hero h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em}
+.hero-desc{font-size:15.5px;color:var(--ink2);line-height:1.78;margin-bottom:1.5rem;max-width:640px}
+.tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.tag{font-size:12px;font-weight:500;padding:5px 13px;border-radius:100px;border:1px solid var(--cream3);color:var(--ink2);background:var(--cream)}
+.tag.sage{background:var(--sage-lt);border-color:transparent;color:var(--sage)}
+.tag.terra{background:var(--terra-lt);border-color:transparent;color:var(--terra)}
+.tag.sky{background:var(--sky-lt);border-color:transparent;color:var(--sky)}
+
+.result-banner{background:var(--terra-lt);border-left:3px solid var(--terra);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin-bottom:2rem}
+.result-banner-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.result-banner-stats{display:flex;flex-wrap:wrap;gap:2rem}
+.rstat-num{font-family:var(--serif);font-size:1.8rem;color:var(--ink);line-height:1}
+.rstat-label{font-size:12px;color:var(--ink2);line-height:1.35;margin-top:.2rem}
+
+.content{max-width:800px;margin:0 auto;padding:0 2.5rem 5rem}
+.section-eyebrow{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.6rem;margin-top:3rem}
+.content h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;color:var(--ink);margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--cream3)}
+.content h3{font-size:15px;font-weight:500;color:var(--ink);margin:1.25rem 0 .5rem}
+.content p{color:var(--ink2);margin-bottom:1rem;font-size:15px;line-height:1.78}
+.content p strong{color:var(--ink)}
+.content ul{list-style:none;margin-bottom:1.25rem}
+.content ul li{color:var(--ink2);font-size:15px;line-height:1.7;padding:.3rem 0 .3rem 1.1rem;position:relative;border-bottom:0.5px solid var(--cream3)}
+.content ul li:last-child{border-bottom:none}
+.content ul li::before{content:'\00b7';position:absolute;left:0;color:var(--terra);font-size:1.2rem;top:-.05rem}
+.content ul li strong{color:var(--ink)}
+code{background:var(--cream2);padding:2px 6px;border-radius:4px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.card{background:white;border:1px solid var(--cream3);border-radius:var(--r);padding:1.5rem;margin:1.25rem 0}
+.card-title{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:1rem}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}
+.stat{background:var(--cream);border-radius:var(--r-sm);padding:.85rem 1rem}
+.stat-num{font-family:var(--serif);font-size:1.6rem;color:var(--ink);line-height:1;margin-bottom:.2rem}
+.stat-label{font-size:12px;color:var(--ink3);line-height:1.3}
+
+.chart-img{width:100%;border-radius:var(--r);border:1px solid var(--cream3);display:block;background:white;cursor:zoom-in;transition:border-color .15s}
+a:hover>.chart-img{border-color:var(--ink3)}
+/* the results figures are ~2560px wide, so let them break out of the 720px text column */
+.fig-wide{margin:1.5rem 0}
+@media(min-width:1180px){.fig-wide{width:1080px;margin-left:-180px}}
+.chart-cap{font-size:12.5px;color:var(--ink3);margin:-.6rem 0 1.5rem;line-height:1.5}
+
+.ieee-card{background:white;border:1px solid var(--cream3);border-radius:var(--r-lg);padding:1.75rem;margin:1.25rem 0}
+.ieee-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin:1rem 0}
+.ieee-stat{background:var(--sage-lt);border-radius:var(--r-sm);padding:.75rem 1rem;text-align:center}
+.ieee-stat-num{font-family:var(--serif);font-size:1.4rem;color:var(--sage);line-height:1}
+.ieee-stat-label{font-size:11.5px;color:var(--ink2);margin-top:.2rem}
+
+.bar-section{background:var(--cream);border-radius:var(--r);padding:1.25rem;margin:1rem 0}
+.bar-label-row{font-size:11px;color:var(--ink3);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.bar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;font-size:12px}
+.bar-name{width:96px;text-align:right;color:var(--ink2);flex-shrink:0}
+.bar-track{flex:1;height:7px;background:var(--cream2);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px}
+.bar-fill.red{background:var(--terra)}
+.bar-fill.green{background:var(--sage)}
+.bar-fill.blue{background:var(--sky)}
+.bar-fill.sand{background:var(--sand)}
+.bar-val{width:66px;color:var(--ink);font-weight:500;font-size:11.5px}
+
+.severity-table{width:100%;border-collapse:collapse;font-size:13px;margin:1rem 0}
+.severity-table th{background:var(--cream2);color:var(--ink2);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--cream3)}
+.severity-table td{padding:.6rem 1rem;border-bottom:1px solid var(--cream3);color:var(--ink2)}
+.severity-table tr:last-child td{border-bottom:none}
+.severity-table tr:hover td{background:var(--cream)}
+.severity-table td.hl{color:var(--terra);font-weight:500}
+.table-wrap{overflow-x:auto;margin:1rem 0}
+.badge-yes{background:var(--terra-lt);color:var(--terra);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.badge-no{background:var(--cream2);color:var(--ink3);padding:2px 8px;border-radius:100px;font-size:11px}
+.badge-ok{background:var(--sage-lt);color:var(--sage);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+
+.ref-list{list-style:none;margin:0;counter-reset:refs}
+.ref-list li{counter-increment:refs;display:flex;gap:.75rem;padding:.5rem 0;border-bottom:0.5px solid var(--cream3);font-size:13px;color:var(--ink2);line-height:1.55}
+.ref-list li:last-child{border-bottom:none}
+.ref-list li::before{content:counter(refs);font-family:var(--serif);font-size:1rem;color:var(--terra);flex-shrink:0;width:20px;padding-top:.05rem}
+.ref-list li a{color:var(--sage)}
+
+.info-box{background:var(--sky-lt);border-left:3px solid var(--sky);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.info-box strong{color:var(--ink)}
+.warn-box{background:var(--sand-lt);border-left:3px solid var(--sand);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--ink2);line-height:1.65}
+.warn-box strong{color:var(--ink)}
+.finding{background:white;border:1px solid var(--terra);border-radius:var(--r);padding:1.25rem 1.5rem;margin:1.5rem 0}
+.finding-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--terra);margin-bottom:.5rem}
+.finding p{margin-bottom:0;color:var(--ink2)}
+.finding p+p{margin-top:.75rem}
+
+.github-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--cream);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:background .15s}
+.github-btn:hover{background:var(--ink2);text-decoration:none;color:var(--cream)}
+.outline-btn{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--ink);border:1.5px solid var(--cream3);border-radius:100px;padding:.65rem 1.5rem;font-size:13.5px;font-weight:500;margin:.5rem .5rem .5rem 0;transition:all .15s}
+.outline-btn:hover{border-color:var(--ink3);text-decoration:none}
+
+
+/* long DOIs, URLs and code lines must not push the page sideways on mobile */
+code{overflow-wrap:anywhere;word-break:break-word}
+.ref-list li{overflow-wrap:anywhere}
+.content a{overflow-wrap:anywhere}
+footer{border-top:1px solid var(--cream3);padding:1.5rem 2.5rem;text-align:center;font-size:12.5px;color:var(--ink3)}
+
+@media(max-width:640px){
+  nav{padding:0 1.25rem}
+  .hero{padding:2.5rem 1.25rem 2rem}
+  .content{padding:0 1.25rem 4rem}
+  .result-banner-stats{gap:1.25rem}
+  .bar-name{width:74px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://chiharum38.github.io/" class="nav-name">Chiharu Mamiya</a>
+  <a href="https://chiharum38.github.io/#markets" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to projects
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Electricity Markets &#183; Ancillary Services &#183; Storage Economics</div>
+  <h1>What a Battery Earns in SE3,<br/>and Which Market It Comes From</h1>
+  <p class="hero-desc">A revenue-stacking model for a 10 MW / 20 MWh battery in Swedish bidding zone SE3. The dispatch optimiser chooses, hour by hour, how much capacity to sell into FCR-D, FCR-N and day-ahead arbitrage, under the physical limits that stop a battery from promising the same MW twice. The question behind it: after the 2024 collapse in Swedish FCR-D prices, how much of a Nordic battery&#8217;s revenue is still bankable?</p>
+  <div class="tags"><span class="tag sage">Python</span><span class="tag sage">NumPy</span><span class="tag sky">ENTSO-E day-ahead</span><span class="tag sky">Svenska kraftn&#228;t FCR</span><span class="tag terra">Dynamic programming</span><span class="tag terra">Revenue stacking</span><span class="tag ">Work in progress</span></div>
+
+  <div class="result-banner">
+    <div class="result-banner-label">Status, October 2026</div>
+    <div class="result-banner-stats"><div><div class="rstat-num">v0.1</div><div class="rstat-label">Optimiser and revenue stack<br/>built, 10 tests passing</div></div><div><div class="rstat-num">3</div><div class="rstat-label">Revenue streams co-optimised:<br/>FCR-D, FCR-N, day-ahead</div></div><div><div class="rstat-num">2023&#8211;25</div><div class="rstat-label">Calibration window,<br/>real data in progress</div></div></div>
+  </div>
+
+  <a href="https://github.com/chiharum38/power-systems-portfolio/tree/main/06_nordic_bess" class="github-btn" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+    View code on GitHub
+  </a>
+</div>
+
+<div class="content">
+
+  <div class="section-eyebrow">Background</div>
+  <h2>Why SE3, and why now</h2>
+  <p>Project 04 on this site derives a price series from generator cost curves and shows that day-ahead arbitrage alone earns a battery nothing below a 1.181 price ratio. That page ends with a caveat: in the Nordic system, reserve revenue often exceeds arbitrage revenue. This project takes that caveat seriously and models the reserves.</p>
+  <p>Sweden is the right place to do it. Svenska kraftn&#228;t procures frequency containment reserves (FCR-N, FCR-D up and FCR-D down) in hourly capacity auctions, and batteries entered that market faster than demand grew. Prequalified FCR-D capacity went from under 10 MW in early 2023 to roughly 600 MW by late 2024, against procurement needs below 550 MW. Marginal pricing replaced pay-as-bid from 1 February 2024. Prices that had sat in the tens of EUR per MW and hour fell to single digits within a year. A revenue model calibrated on 2023 FCR-D prices overstates a Nordic battery&#8217;s income badly, and the point of this project is to quantify by how much.</p>
+
+  <div class="info-box">
+    <strong>The question:</strong> for a 10 MW / 20 MWh battery in SE3, how much can it earn from FCR-D, FCR-N and day-ahead arbitrage together, how does that split change between 2023 and 2025, and what does the shift mean for a lender sizing debt against it?
+  </div>
+
+  <div class="section-eyebrow">Method</div>
+  <h2>One optimiser, three products</h2>
+  <p>Each hour the model chooses three things: a day-ahead dispatch (charge or discharge, in MW), an FCR-D reservation and an FCR-N reservation. The three compete for the same two resources:</p>
+  <ul>
+    <li><strong>Rated power.</strong> Reserved MW plus dispatched MW cannot exceed the inverter rating. A MW sold as FCR-D is a MW that cannot be used to discharge into a high day-ahead hour.</li>
+    <li><strong>State of charge.</strong> Reserved capacity must be deliverable in both directions for a full activation, so the battery can be neither empty nor full while it holds reserves. Each reserved MW pins a slice of the energy store on both sides.</li>
+  </ul>
+  <p>The schedule that maximises total revenue over the day is found by exact dynamic programming over a discretised state-of-charge grid. Prices for the day are assumed known, so the result is an upper bound on what a real forecast-driven strategy could capture, and the gap between the two is one of the quantities the project is designed to measure. The optimiser is written in plain NumPy with no solver dependency; a linear-programming version is planned and the test suite will check that both agree.</p>
+  <p>The code is structured as a package rather than a notebook: an asset class, a price loader with a documented CSV schema, the optimiser, a day-by-day runner that carries state of charge between days, and a command-line entry point. That was a deliberate choice after a conversation with an optimisation engineer at a battery trading firm, whose point was that the formulation is the easy part and the integration is where the work is.</p>
+
+  <div class="section-eyebrow">Data</div>
+  <h2>Public sources, and the three breaks in them</h2>
+  <div class="table-wrap"><table class="severity-table"><thead><tr><th>Series</th><th>Source</th><th>Resolution</th><th>Unit</th></tr></thead><tbody><tr><td>Day-ahead price, SE3</td><td>ENTSO-E Transparency Platform (A44)</td><td>Hourly to 30 Sep 2025, then 15-minute</td><td>EUR/MWh</td></tr><tr><td>FCR-N capacity price</td><td>Svenska kraftn&#228;t, Mimer / data.svk.se</td><td>Hourly</td><td>EUR/MW per hour</td></tr><tr><td>FCR-D up and FCR-D down</td><td>Svenska kraftn&#228;t, Mimer / data.svk.se</td><td>Hourly, two auctions per product</td><td>EUR/MW per hour</td></tr></tbody></table></div>
+  <p>Three structural changes fall inside the 2023 to 2025 window and have to be handled explicitly rather than averaged over: the move from pay-as-bid averages to marginal prices in February 2024, the switch of the day-ahead market to 15-minute products in October 2025, and the migration of FCR procurement to the Nordic MMS platform in April 2026. The data pipeline keeps a regime flag for each so results can be reported per regime.</p>
+
+  <div class="section-eyebrow">What comes next</div>
+  <h2>Planned results</h2>
+  <ol>
+    <li>Build the merged hourly SE3 dataset for 2023 to 2025 and recompute the annual FCR averages from the hourly data, since no official annual figures exist.</li>
+    <li>Run the optimiser over each year and report revenue per MW-year by product, so the FCR-D compression shows up as a shift in the revenue mix rather than a single headline number.</li>
+    <li>Measure the foresight premium by replacing perfect knowledge of day-ahead prices with a simple forecast.</li>
+    <li>Add a project-finance layer: debt sizing against the contracted-looking part of the revenue stack, DSCR under each year&#8217;s prices, and equity IRR. This is the piece that turns a dispatch model into an answer about bankability.</li>
+    <li>Cross-check revenue per MW-year against a published battery benchmark for a market with comparable data coverage.</li>
+  </ol>
+
+  <div class="section-eyebrow">Honesty</div>
+  <h2>Limitations, as of v0.1</h2>
+  <div class="warn-box">
+    <strong>No real-data results are published yet.</strong> The optimiser has only been run on synthetic prices to verify that it behaves correctly. No revenue figure from those runs appears on this page, because none of them means anything.
+  </div>
+  <ul>
+    <li><strong>Perfect foresight within each day.</strong> Results will be an upper bound until the forecast step is in.</li>
+    <li><strong>Symmetric reserves.</strong> FCR-D up and down are modelled with the same state-of-charge requirement; the real products are separately priced and separately procured, and the data pipeline keeps them separate.</li>
+    <li><strong>No degradation cost, grid charges or intraday trading.</strong></li>
+    <li><strong>Terminal state of charge is valued at zero</strong> each day, which slightly discourages ending the day charged.</li>
+  </ul>
+
+  <div class="section-eyebrow">Tools and libraries</div>
+  <h2>Software used</h2>
+  <ul>
+    <li><strong>NumPy</strong>, the dynamic-programming optimiser.</li>
+    <li><strong>Python standard library</strong> <code>csv</code>, <code>argparse</code> and <code>unittest</code>, so the package runs with no installation beyond NumPy.</li>
+    <li><strong>ENTSO-E Transparency Platform</strong> and <strong>Svenska kraftn&#228;t</strong> open data, both free and both in EUR.</li>
+  </ul>
+
+  <div class="section-eyebrow">References</div>
+  <h2>References</h2>
+  <ol class="ref-list"><li>Svenska kraftn&#228;t (2024). &#8220;Introduction of marginal pricing on FCR markets.&#8221; svk.se.</li><li>Svenska kraftn&#228;t (2025). &#8220;L&#229;ga priser p&#229; FCR n&#228;r 2024 summeras.&#8221; svk.se.</li><li>Svenska kraftn&#228;t. FCR Capacity Market dataset, data.svk.se, CC-BY 4.0.</li><li>ENTSO-E Transparency Platform. Day-ahead prices, document type A44, bidding zone SE3.</li><li>Nord Pool (2025). &#8220;15-minute MTU in SDAC was implemented.&#8221; nordpoolgroup.com.</li></ol>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--cream3)">
+    <a href="https://github.com/chiharum38/power-systems-portfolio/tree/main/06_nordic_bess" class="github-btn" target="_blank" rel="noopener">View code on GitHub</a>
+    <a href="https://chiharum38.github.io/#markets" class="outline-btn">&#8592; Back to all projects</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>Chiharu Mamiya &#183; Power Systems Engineer &#183; KTH InnoEnergy SENSE MSc 2026 to 2028</p>
+</footer>
+
+</body>
+</html>
