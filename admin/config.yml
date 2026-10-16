@@ -8,7 +8,7 @@
 
 backend:
   name: github
-  repo: chiharuma38/chiharuma38.github.io
+  repo: chiharum38/chiharum38.github.io
   branch: main
   commit_messages:
     create: 'Add note: {{slug}}'
@@ -21,9 +21,9 @@ media_folder: "images/notes"
 public_folder: "/images/notes"
 
 publish_mode: simple
-site_url: https://chiharuma38.github.io
-display_url: https://chiharuma38.github.io
-logo_url: https://chiharuma38.github.io/images/chiharu_profile_pic.png
+site_url: https://chiharum38.github.io
+display_url: https://chiharum38.github.io
+logo_url: https://chiharum38.github.io/images/chiharu_profile_pic.png
 
 collections:
   - name: notes

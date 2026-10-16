@@ -44,7 +44,7 @@ Set `status: published` to give it a page and make it the featured card.
 ## One-time setup on Netlify
 
 1. Sign in at netlify.com with GitHub and choose **Add new site, Import an
-   existing project**, then pick `chiharuma38.github.io`. Build command
+   existing project**, then pick `chiharum38.github.io`. Build command
    `npm run build`, publish directory `.` (both are already in `netlify.toml`).
 2. On GitHub go to **Settings, Developer settings, OAuth Apps, New OAuth App**.
    Homepage URL is your Netlify address. Authorization callback URL is
@@ -72,7 +72,7 @@ Doing this in the wrong order takes the site offline for a while, so:
 2. **Custom domain second.** Buy the domain, add it under Netlify **Domain
    management**, and let the certificate issue. Confirm the site loads there.
 3. **Make the repository private last.** GitHub, **Settings, General, Danger
-   Zone, Change visibility**. Netlify keeps building. `chiharuma38.github.io`
+   Zone, Change visibility**. Netlify keeps building. `chiharum38.github.io`
    stops working at this point, so update the links on your CV and LinkedIn to
    the new domain first.
 
@@ -83,7 +83,7 @@ private hides them. To keep new commits from adding more:
 
 1. GitHub, **Settings, Emails**, tick **Keep my email addresses private** and
    copy the noreply address it shows, which looks like
-   `12345678+chiharuma38@users.noreply.github.com`.
+   `12345678+chiharum38@users.noreply.github.com`.
 2. Then run, once:
 
        git config --global user.email "<that noreply address>"

@@ -34,7 +34,7 @@
           "done": true
         }
       ],
-      "repo": "https://github.com/chiharuma38/power-systems-portfolio/tree/main/01_n1_contingency",
+      "repo": "https://github.com/chiharum38/power-systems-portfolio/tree/main/01_n1_contingency",
       "page": "projects/n1_contingency.html"
     },
     {
@@ -74,7 +74,7 @@
           "done": true
         }
       ],
-      "repo": "https://github.com/chiharuma38/power-systems-portfolio/tree/main/02_offshore_wind",
+      "repo": "https://github.com/chiharum38/power-systems-portfolio/tree/main/02_offshore_wind",
       "page": "projects/offshore_wind.html"
     },
     {
@@ -118,7 +118,7 @@
           "done": true
         }
       ],
-      "repo": "https://github.com/chiharuma38/power-systems-portfolio/tree/main/03_fault_detection",
+      "repo": "https://github.com/chiharum38/power-systems-portfolio/tree/main/03_fault_detection",
       "page": "projects/fault_detection.html"
     },
     {
@@ -162,7 +162,7 @@
           "done": true
         }
       ],
-      "repo": "https://github.com/chiharuma38/power-systems-portfolio/tree/main/04_storage_optimizer",
+      "repo": "https://github.com/chiharum38/power-systems-portfolio/tree/main/04_storage_optimizer",
       "page": "projects/storage_optimizer.html"
     },
     {
@@ -206,7 +206,7 @@
           "done": true
         }
       ],
-      "repo": "https://github.com/chiharuma38/power-systems-portfolio/tree/main/05_contingency_toolkit",
+      "repo": "https://github.com/chiharum38/power-systems-portfolio/tree/main/05_contingency_toolkit",
       "page": "projects/contingency_toolkit.html"
     }
   ]

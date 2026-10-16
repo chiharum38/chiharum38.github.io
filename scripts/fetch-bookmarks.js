@@ -65,7 +65,7 @@ async function getFeedXml() {
     process.exit(0);
   }
   if (/^https?:/i.test(src)) {
-    const res = await fetch(src, { headers: { 'user-agent': 'chiharuma38.github.io weekly-draft' } });
+    const res = await fetch(src, { headers: { 'user-agent': 'chiharum38.github.io weekly-draft' } });
     if (!res.ok) throw new Error(`Feed fetch failed: HTTP ${res.status}`);
     return await res.text();
   }
