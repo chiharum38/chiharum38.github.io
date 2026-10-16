@@ -1,0 +1,28 @@
+{
+  "entries": [
+    {
+      "degree": "MSc · Smart Electrical Networks and Systems (SENSE)",
+      "school": "KTH Royal Institute of Technology · InnoEnergy dual degree programme",
+      "note": "Offshore wind integration · HVDC · power system stability · ML in power systems",
+      "dates": "Aug 2026 – May 2027"
+    },
+    {
+      "degree": "MSc Year 2 · Smart Electrical Networks and Systems (SENSE)",
+      "school": "KU Leuven, Belgium · InnoEnergy dual degree programme",
+      "note": "Design and management of electric power systems · Industrial automation and control · Master thesis · Industrial traineeship (6 ECTS)",
+      "dates": "Aug 2027 – May 2028"
+    },
+    {
+      "degree": "BSc · Electrical Engineering · Minor: Biomedical Engineering",
+      "school": "Union College, Schenectady NY",
+      "note": "GPA 3.8 · Tau Beta Pi Engineering Honor Society · JASSO Scholar · Grew Bancroft Scholar · UAS7 Scholar · NYSTAR Scholar · IEEE ICNC 2024 publication",
+      "dates": "Sep 2021 – Nov 2025"
+    },
+    {
+      "degree": "Electrical and Electronics Engineering Exchange",
+      "school": "FH Münster, Germany · UAS7 Scholar",
+      "note": "Embedded quantum sensing research · FPGA · VHDL/Verilog · Red Pitaya platform",
+      "dates": "Sep 2024 – Feb 2025"
+    }
+  ]
+}

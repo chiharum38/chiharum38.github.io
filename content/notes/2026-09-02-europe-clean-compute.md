@@ -1,5 +1,5 @@
 ---
-title: "Europe's clean compute ambition depends on *grid connection capacity*"
+title: "Europe’s clean compute ambition depends on *grid connection capacity*"
 slug: "europe-clean-compute"
 date: 2026-09-02
 status: "published"
@@ -8,7 +8,7 @@ category: "Grids and digitalisation"
 image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80&auto=format&fit=crop"
 excerpt: "Data centres are projected to increase from 2% of EU electricity demand to nearly 8% by 2030, while connection timelines in several markets already extend from seven to thirteen years. If clean compute is the advantage Europe holds, the binding constraint is the speed of interconnection rather than the carbon intensity of the supply, which makes this a power systems problem before it is a policy one."
 lede: "Elena Bou argues that Europe should stop attempting to replicate the American cloud industry and should instead build the layer in which it already has capability. I agree with that conclusion. The point I would add, from the engineering side of the problem, is that the asset she describes is not clean electricity itself but the capacity to connect new load to the network, and that is currently the scarcer of the two."
-sourceTitle: "Europe Can't Recreate Silicon Valley. Here's What It Can Build Instead"
+sourceTitle: "Europe Can’t Recreate Silicon Valley. Here’s What It Can Build Instead"
 sourceAuthor: "Elena Bou, co-founder of InnoEnergy"
 sourcePublication: "Forbes"
 sourceDate: "26 August 2026"
@@ -26,9 +26,9 @@ stats:
   - num: "213 g"
     label: "CO2 per kWh on the EU grid in 2024, against 384 g in the United States"
   - num: "~5%"
-    label: "Europe's share of global AI computing capacity, against roughly 75% in the US"
+    label: "Europe’s share of global AI computing capacity, against roughly 75% in the US"
 readingNext:
-  - "IEA, Overcoming energy constraints is key to delivering on Europe's data centre goals"
+  - "IEA, Overcoming energy constraints is key to delivering on Europe’s data centre goals"
   - "European Parliament briefing on data centres in the EU energy system (EPRS 775859)"
   - "Ember, Global Electricity Review 2025, for the carbon intensity series behind the 213 g figure"
 ---

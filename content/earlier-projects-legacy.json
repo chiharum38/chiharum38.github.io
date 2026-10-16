@@ -1,0 +1,68 @@
+{
+  "entries": [
+    {
+      "title": "Basketball ML",
+      "href": "projects/basketball_ml.html",
+      "description": "Used IMU sensors and machine learning to classify shot outcome, position, and player experience · achieving 94% location accuracy. Published at IEEE ICNC 2024.",
+      "tags": ["Python", "Machine Learning", "IMU Sensors", "IEEE Publication"],
+      "image": "images/basketball_shot_front.png",
+      "imageAlt": "Basketball Shot Analysis"
+    },
+    {
+      "title": "IoT Gesture",
+      "href": "projects/iot_gesture.html",
+      "description": "IoT fertilizer spiller with ESP32, dual-mode operation (manual and gesture), and neural network deployment for real-time agricultural automation.",
+      "tags": ["ESP32", "Machine Learning", "IoT"],
+      "image": "images/iot_gesture_front.png",
+      "imageAlt": "IoT Gesture Recognition"
+    },
+    {
+      "title": "FPGA Game",
+      "href": "projects/catch_the_falling_object.html",
+      "description": "VHDL-coded real-time game on FPGA board with random object generation, collision detection, and score display via VGA output.",
+      "tags": ["FPGA", "VHDL", "Digital Design"],
+      "image": "images/vhdl_front.png",
+      "imageAlt": "FPGA Game"
+    },
+    {
+      "title": "VisiMed CT",
+      "href": "projects/project_visimedCT.html",
+      "description": "Medical imaging innovation presented at the 2024 Capital Region Bioinnovation Bootcamp. Finalist · developed a workflow for safer, more accessible CT diagnostics.",
+      "tags": ["Medical Imaging", "Innovation", "Entrepreneurship"],
+      "image": "images/VisimedCT_front.png",
+      "imageAlt": "VisiMed CT"
+    },
+    {
+      "title": "Safe System",
+      "href": "projects/advanced_safe_system.html",
+      "description": "Secure safe with alphanumeric keypad, break-beam sensor detection, LED and siren notification, and servo lock using STM32 microcontroller.",
+      "tags": ["Embedded Systems", "STM32", "Security"],
+      "image": "images/safe_system_front.png",
+      "imageAlt": "Advanced Safe System"
+    },
+    {
+      "title": "Arthroscope CAD",
+      "href": "projects/arthroscope_cad.html",
+      "description": "Surgical arthroscope and camera system designed in SolidWorks for orthopedic applications, focusing on manufacturability and ergonomics.",
+      "tags": ["SolidWorks", "CAD", "Medical Devices"],
+      "image": "images/arthroscope_front.png",
+      "imageAlt": "Arthroscope CAD"
+    },
+    {
+      "title": "Judo Analysis",
+      "href": "projects/judo_analysis.html",
+      "description": "Mathematical modeling to analyze flip trajectories in Judo, comparing expert and novice performance using centroid tracking and Python/MATLAB.",
+      "tags": ["Biomechanics", "MATLAB", "Data Analysis"],
+      "image": "images/judo_front.png",
+      "imageAlt": "Judo Analysis"
+    },
+    {
+      "title": "Med Dispenser",
+      "href": "projects/project_automaticmeddisp.html",
+      "description": "Arduino-based system for automated medication dispensing with safety lock, LED notification, and ultrasonic sensing.",
+      "tags": ["Arduino", "Embedded", "Sensors"],
+      "image": "images/medication_dispenser.png",
+      "imageAlt": "Medication Dispenser"
+    }
+  ]
+}

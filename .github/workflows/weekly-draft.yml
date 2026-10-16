@@ -1,0 +1,52 @@
+# Every Sunday morning, turns the week's daily.dev bookmarks into a queued
+# draft note (content/notes/YYYY-MM-DD-reading-week.md). Nothing goes live:
+# the draft shows up as a placeholder card until you write the takeaways in
+# /admin and set status to "published".
+#
+# Needs "bookmarksFeed" set in content/site.json (your public daily.dev
+# bookmarks RSS URL). Until that is set, the run is a quiet no-op.
+#
+# 06:00 UTC Sunday = 08:00 in Stockholm during summer time, 07:00 in winter.
+name: Weekly reading draft
+
+on:
+  schedule:
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-site
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Fetch this week's bookmarks into a draft note
+        run: node scripts/fetch-bookmarks.js
+
+      - run: npm run build
+
+      - name: Commit the draft
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/notes notes index.html
+          if git diff --cached --quiet; then
+            echo "No new draft this week — nothing to commit."
+          else
+            git commit -m "Draft: weekly reading round-up (queued, not published)"
+            git push
+          fi

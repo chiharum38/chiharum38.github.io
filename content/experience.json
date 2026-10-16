@@ -1,0 +1,54 @@
+{
+  "entries": [
+    {
+      "color": "teal",
+      "company": "GE Vernova",
+      "title": "Grid Solutions Graduate Engineer",
+      "location": "Saratoga Springs, NY · Oct 2025 to May 2026",
+      "bullets": [
+        "PowerFactory & PSS®E studies for MV transmission networks",
+        "Built the **FACTSFLEX** presales demo in Django",
+        "Python automation for short-circuit workflows"
+      ]
+    },
+    {
+      "color": "blue",
+      "company": "Siemens",
+      "title": "Technical Consultant Intern",
+      "location": "Fremont, CA · Jun to Aug 2025",
+      "bullets": [
+        "Steady-state & transient T&D simulations",
+        "Cut PSS®E / TSAT runtime by **~30%**"
+      ]
+    },
+    {
+      "color": "slate",
+      "company": "Siemens",
+      "title": "Software Developer Intern",
+      "location": "Schenectady, NY · Jun to Aug 2024",
+      "bullets": [
+        "Automated XML processing in Python, **−25% dev time**",
+        "Migrated legacy C++ to MFC"
+      ]
+    },
+    {
+      "color": "terracotta",
+      "company": "Medtronic",
+      "title": "Systems Engineering Intern",
+      "location": "Fridley, MN · Jun to Aug 2023",
+      "bullets": [
+        "Test automation with Python, Appium & ADB, **+30%**",
+        "Validated closed-loop DBS system, **+20% performance**"
+      ]
+    },
+    {
+      "color": "gold",
+      "company": "PivotGen",
+      "title": "Project Management Intern",
+      "location": "Remote · Jan to Jun 2024",
+      "bullets": [
+        "Tracked sourcing & repair across **96 wind turbines**, +20% repair efficiency"
+      ]
+    }
+  ]
+}

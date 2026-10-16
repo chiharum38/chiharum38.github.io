@@ -1,0 +1,46 @@
+# Rebuilds the notes pages and homepage section on every push, and commits
+# the generated HTML so GitHub Pages serves it. This is what makes a note
+# published from /admin (which only commits the markdown) actually go live.
+#
+# Pushes made by this workflow use the built-in GITHUB_TOKEN, which does not
+# trigger workflows, so there is no build loop.
+name: Build site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Commit generated pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notes index.html
+          if git diff --cached --quiet; then
+            echo "Nothing changed — no commit needed."
+          else
+            git commit -m "Build: regenerate note pages and homepage section"
+            git push
+          fi

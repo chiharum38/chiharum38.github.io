@@ -91,3 +91,61 @@ private hides them. To keep new commits from adding more:
 
 The CMS commits through GitHub directly, so anything published from `/admin`
 already uses whatever address GitHub has configured.
+
+## The weekly reading round-up (automated)
+
+Two GitHub Actions workflows now do the mechanical work:
+
+- `.github/workflows/build.yml` — on every push, runs `npm run build` and
+  commits the generated `notes/*.html` and homepage section. This means a
+  note published from `/admin` goes live on its own; no more running the
+  build locally and committing the output by hand.
+- `.github/workflows/weekly-draft.yml` — every Sunday morning, reads your
+  public daily.dev bookmarks feed and commits a draft note
+  (`content/notes/YYYY-MM-DD-reading-week.md`) with `status: queued`.
+  It appears as a placeholder card, never as a live page.
+
+Your part, once a week: open the draft in `/admin`, keep the items worth
+writing about, replace each takeaway placeholder with your own thinking,
+set `status: published`, and press Publish. The build workflow does the rest.
+
+One-time setup:
+
+1. In daily.dev: Bookmarks → enable **Public mode** and copy the RSS feed URL.
+2. Paste it into `content/site.json` as the value of `"bookmarksFeed"`.
+
+Until that URL is set, the Sunday workflow runs and does nothing. You can
+also trigger it manually from the repo's Actions tab ("Run workflow"), and
+`node scripts/fetch-bookmarks.js` runs the same thing locally.
+
+## Editing the rest of the homepage from /admin
+
+The `/admin` editor now covers most of the homepage, not just notes:
+
+- **Bio** — the hero card's role line, short bio, the three front-of-card
+  stats, and the four "hover for background" paragraphs.
+- **Experience** — each role's company, title, location/dates, an accent
+  colour (picked from a preset list, so the look stays consistent), and
+  its bullet points. Use `**double asterisks**` to bold a phrase.
+- **Earlier Projects** — a new "Projects" collection. Fill in the form,
+  set status to Published, and it gets its own page (built the same way
+  a note does) *and* is added to the Earlier Projects list on the
+  homepage automatically. Leave status as Draft to work on it without
+  publishing yet.
+- **Education** — the four degree entries, as simple cards.
+
+What's still hand-edited HTML, not yet in `/admin`:
+
+- The five flagship "Grid engineering projects" panels (the gallery with
+  the hand-picked background photos) — these were deliberately curated,
+  so they're left as-is for now. Ask Claude if you'd like these made
+  editable too.
+- Skills and Contact sections.
+- Your photo and the social links (GitHub/LinkedIn/email/CV) on the hero
+  card.
+
+Each of these lives in its own small file under `content/` (`bio.json`,
+`experience.json`, `education.json`, `earlier-projects-legacy.json`, plus
+`content/projects/*.md` for anything created from the new Projects
+collection) if you ever want to see or edit the raw data directly instead
+of going through the form.

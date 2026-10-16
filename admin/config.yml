@@ -144,6 +144,146 @@ collections:
         required: false
         hint: "Use ## for a section heading. A blockquote (>) becomes the green pull-quote box."
 
+  - name: projects
+    label: "Earlier Projects"
+    label_singular: "Project"
+    folder: "content/projects"
+    create: true
+    slug: "{{fields.slug}}"
+    summary: "{{title}}"
+    sortable_fields: ['date', 'title']
+    view_groups:
+      - label: Status
+        field: status
+    fields:
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        hint: "The full title, shown at the top of the project's own page."
+
+      - label: "Short title (nav tab label)"
+        name: "shortTitle"
+        widget: "string"
+        hint: "Shown as the small tab in the Earlier Projects list, e.g. \"Battery ML\". Keep it to a word or two."
+
+      - label: "URL name"
+        name: "slug"
+        widget: "string"
+        pattern: ['^[a-z0-9-]+$', "Lowercase letters, numbers and hyphens only."]
+        hint: "Becomes the web address, e.g. battery-ml gives /projects/battery-ml.html"
+
+      - label: "Date"
+        name: "date"
+        widget: "datetime"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        picker_utc: true
+        hint: "Controls where it sits in the list, oldest to newest. Doesn't need to be exact."
+
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        default: "queued"
+        options:
+          - { label: "Published, live on the site", value: "published" }
+          - { label: "Draft, not shown yet", value: "queued" }
+        hint: "Only Published projects get their own page and appear in the Earlier Projects list."
+
+      - label: "Category / eyebrow"
+        name: "eyebrow"
+        widget: "string"
+        required: false
+        hint: "Small label above the title on the project's page, e.g. \"Machine Learning · Sports Analytics\". Leave blank to use the tags instead."
+
+      - label: "Description"
+        name: "description"
+        widget: "text"
+        hint: "Used both as the card text in the Earlier Projects list and the intro paragraph on the project's page. Two or three sentences."
+
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        field: { label: "Tag", name: "tag", widget: "string" }
+
+      - label: "Image"
+        name: "image"
+        widget: "string"
+        hint: "Paste any image address, or upload one under Media and paste its path. Used as the thumbnail in the list and the banner on the project's page."
+
+      - label: "Key numbers"
+        name: "stats"
+        widget: "list"
+        required: false
+        summary: "{{fields.num}}"
+        fields:
+          - { label: "Number", name: "num", widget: "string" }
+          - { label: "What it means", name: "label", widget: "string" }
+
+      - label: "Publication: description"
+        name: "pubText"
+        widget: "string"
+        required: false
+        hint: "e.g. a paper citation. Leave blank if this project wasn't published anywhere."
+      - label: "Publication: link"
+        name: "pubUrl"
+        widget: "string"
+        required: false
+
+      - label: "Body"
+        name: "body"
+        widget: "markdown"
+        required: false
+        hint: "The write-up on the project's own page. Use ## for a section heading. A blockquote (>) becomes the green pull-quote box."
+
+  - name: experience
+    label: "Experience"
+    files:
+      - name: experience_list
+        label: "Roles"
+        file: "content/experience.json"
+        fields:
+          - label: "Roles, most recent first"
+            name: "entries"
+            widget: "list"
+            summary: "{{fields.company}} \u2014 {{fields.title}}"
+            fields:
+              - { label: "Company", name: "company", widget: "string" }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Location & dates", name: "location", widget: "string", hint: "e.g. Saratoga Springs, NY \u00B7 Oct 2025 to May 2026" }
+              - label: "Accent colour"
+                name: "color"
+                widget: "select"
+                options:
+                  - { label: "Teal", value: "teal" }
+                  - { label: "Blue", value: "blue" }
+                  - { label: "Slate blue", value: "slate" }
+                  - { label: "Terracotta", value: "terracotta" }
+                  - { label: "Gold", value: "gold" }
+                  - { label: "Sky", value: "sky" }
+              - label: "Bullet points"
+                name: "bullets"
+                widget: "list"
+                field: { label: "Bullet", name: "bullet", widget: "string" }
+                hint: "Use **double asterisks** to bold a word or phrase, the way the existing ones do."
+
+  - name: education
+    label: "Education"
+    files:
+      - name: education_list
+        label: "Education entries"
+        file: "content/education.json"
+        fields:
+          - label: "Entries"
+            name: "entries"
+            widget: "list"
+            summary: "{{fields.degree}}"
+            fields:
+              - { label: "Degree / programme", name: "degree", widget: "string" }
+              - { label: "School", name: "school", widget: "string" }
+              - { label: "Note (focus areas etc.)", name: "note", widget: "string" }
+              - { label: "Dates", name: "dates", widget: "string" }
+
   - name: homepage
     label: "Homepage wording"
     files:
@@ -154,3 +294,22 @@ collections:
           - { label: "Eyebrow", name: "notesEyebrow", widget: "string" }
           - { label: "Heading", name: "notesHeading", widget: "string" }
           - { label: "Intro paragraph", name: "notesIntro", widget: "text" }
+
+      - name: bio
+        label: "Bio (hero card)"
+        file: "content/bio.json"
+        fields:
+          - { label: "Role / tagline", name: "role", widget: "string" }
+          - { label: "Short bio (front of card)", name: "bioFront", widget: "text" }
+          - label: "Stats (front of card)"
+            name: "stats"
+            widget: "list"
+            summary: "{{fields.num}}"
+            fields:
+              - { label: "Number", name: "num", widget: "string" }
+              - { label: "Label", name: "label", widget: "string" }
+          - label: "Background paragraphs (back of card, shown on hover)"
+            name: "backParagraphs"
+            widget: "list"
+            field: { label: "Paragraph", name: "paragraph", widget: "text" }
+            hint: "Use **double asterisks** to bold a phrase, the way the existing ones do."

@@ -1,0 +1,24 @@
+{
+  "role": "Power Systems Engineer · KTH InnoEnergy SENSE MSc",
+  "bioFront": "Power systems engineer with hands-on experience in PSS®E, PowerFactory, and Python automation from GE Vernova and Siemens. Now on the EIT InnoEnergy SENSE MSc at KTH Stockholm, focused on offshore wind, HVDC, and grid digitalization.",
+  "stats": [
+    {
+      "num": "94%",
+      "label": "TSAT runtime ↓"
+    },
+    {
+      "num": "70%",
+      "label": "PSS/E efficiency ↑"
+    },
+    {
+      "num": "3",
+      "label": "Languages"
+    }
+  ],
+  "backParagraphs": [
+    "I’m a power systems engineer working at the intersection of **grid digitalization, renewable energy integration, and Python-based automation**.",
+    "At Siemens I automated PSS®E and TSAT workflows in Python, cutting contingency analysis runtime by 70% and simulation runtime by 94% through parallel processing. At GE Vernova I performed short-circuit, load flow, and transient stability studies in PSS®E and PowerFactory for utility and industrial clients across the US.",
+    "I am now on the **SENSE MSc at KTH Royal Institute of Technology** (Year 1), followed by KU Leuven in Belgium (Year 2), as part of the EIT InnoEnergy dual degree programme. Focus: offshore wind grid integration, HVDC, and smart grid control.",
+    "Longer term I’m drawn to the intersection of power engineering and capital allocation · the technical due diligence and infrastructure investment building the energy transition."
+  ]
+}
